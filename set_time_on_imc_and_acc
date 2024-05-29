@@ -45,5 +45,6 @@ execute_commands() {
 }
 
 # Execute the commands
+echo 0 > ~/.ssh/known_hosts
 execute_commands
 

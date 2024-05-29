@@ -1,4 +1,24 @@
-HOST_VF_VSI=28 ; HOST_VF_PORT=44
+
+    |----------Host-----------------------------------------------------------------|
+    |                                                                               |
+    |  HOST_VF_INTF = 192.168.1.101/24                                              |
+    |  (ens801f0v1)                                                                 |
+    |  (VSI 0x1C)                                                                   |
+    |       |               -----------------------ACC-------------------           |
+    |       |               |                                           |           |
+    |       |               |       |==========OVS===========|          |           |
+    |       |               |       |                        |          |           |
+    |       |               |   ACC_PR1_INTF            ACC_PR2_INTF    |           |
+    |       |               |   (enp0s1f0d4)            (enp0s1f0d5)    |           |
+    |       ----------------|---(VSI 0x0B)              (VSI 0x0C)      |           |
+    |                       |                               |           |           |
+    |                       |-------------------------------|-----------|           |           
+    |                                                       |                       |
+    |                                                       |---------------->PHY_PORT 0  <==============> LP ens801f0 = 192168.1.102/24
+    |-------------------------------------------------------------------------------|
+
+
+HOST_VF_INTF=ens801f0v1; HOST_VF_VSI=28 ; HOST_VF_PORT=44
 ACC_PR1_INTF=enp0s1f0d4 ;  ACC_PR1_VSI=11  ; ACC_PR1_PORT=27
 
 echo "HOST_VF - ACC_PR1:"
@@ -67,3 +87,105 @@ ovs-vsctl add-port br-intrnl enp0s1f0d4
 ovs-vsctl add-port br-intrnl enp0s1f0d5
 ifconfig br-intrnl up
 ovs-vsctl show
+
+
+
+
+
+
+
+
+
+
+
+======
+IPsec (manual config)
+======
+
+
+#
+# Add routing interface and add to nextop table
+#
+# HOST_VF
+# ens801f0v0 : 00:1c:00:00:03:14
+ 
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_start \
+    "rif_mod_map_id0=0x0005,action=linux_networking_control.set_src_mac_start(arg=0x001c)"
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_mid \
+    "rif_mod_map_id1=0x0005,action=linux_networking_control.set_src_mac_mid(arg=0x0000)"
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_last \
+    "rif_mod_map_id2=0x0005,action=linux_networking_control.set_src_mac_last(arg=0x0314)"
+ 
+# table nexthop_table - Add router interface (0x05)
+ 
+#${P4_DEL_ENTRY} linux_networking_control.nexthop_table "user_meta.cmeta.nexthop_id=4,bit16_zeros=0"
+ 
+# CVL_HOST - nexthop
+# vxlan10 (xx.102) : ee:35:eb:f9:2f:2b
+p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
+    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0xee35,dmac_low=0xebf92f2b)"
+ 
+# Add to ipv4_table
+p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
+    "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
+
+
+
+
+
+
+
+=====
+VXLAN (below IPv6 config does NOT work)
+=====
+
+ifconfig br-intrnl down
+ovs-vsctl del-port br-intrnl enp0s1f0d5
+ovs-vsctl del-port br-intrnl enp0s1f0d4
+ovs-vsctl del-br br-intrnl
+ovs-vsctl show
+
+
+ovs-vsctl add-br br-intrnl
+ovs-vsctl add-port br-intrnl enp0s1f0d4
+ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \
+    options:local_ip=1000:1::1 options:remote_ip=1000:1::2 options:key=10 options:dst_port=4789
+ifconfig br-intrnl up
+sleep 1
+
+ovs-vsctl add-br br-tunl
+ovs-vsctl add-port br-tunl enp0s1f0d5
+ip addr add 5::1/64 dev br-tunl
+ip link set br-tunl up
+sleep 1
+
+ip link add dev TEP10 type dummy
+sleep 1
+ip addr add 1000:1::1/64 dev TEP10
+ip link set TEP10 up
+ip route add 1000:1::/64 via 5::2 dev br-tunl
+
+
+Host
+===
+ip addr add dev ens801f0v1 9::1/64
+
+LP
+==
+CVL_INTF=ens801f0
+
+ip link add dev TEP10 type dummy
+ip addr add 1000:1::2/64 dev TEP10
+ip link set TEP10 up
+ip addr show TEP10
+
+# vxlan10 interface
+ip link add vxlan10 type vxlan id 10 dstport 4789 remote 1000:1::2 local 1000:1::1
+ip addr add 9::2/64 dev vxlan10
+ip link set vxlan10 up
+ip addr show vxlan10
+
+ip addr add 5::2/64 dev ${CVL_INTF}
+ip link set ${CVL_INTF} up
+ip route add 1000:1::/64 via 5::1 dev ${CVL_INTF}
+ip addr show ${CVL_INTF}

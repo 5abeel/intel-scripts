@@ -5,33 +5,6 @@ ACC="root@192.168.0.2"
 HOST="root@10.166.232.1"
 OUTPUT_DIR=/usr/share/stratum/lnw-v3
 
-disable_firewall() {
-    local log_message="$1"
-    printf "%s" "$log_message"
-
-    # Check if firewalld service exists
-    if systemctl is-enabled firewalld > /dev/null 2>&1; then
-        systemctl stop firewalld
-        systemctl disable firewalld
-    fi
-    printf "OK\n"
-}
-
-set_timestamp() {
-    local log_message="$1"
-    printf "%s" "$log_message"
-
-    local current_time=$(date +%Y-%m-%d\ %H:%M:%S)
-    local pdt_tz="America/Los_Angeles"
-
-    timedatectl set-local-rtc 0
-    timedatectl set-ntp true
-    systemctl disable --now chronyd
-    timedatectl set-time "$current_time"
-    timedatectl set-timezone "$pdt_tz"
-
-    printf "OK\n"
-}
 
 cleanup() {
     printf "Cleaning up..."
@@ -99,19 +72,8 @@ enable_idpf_on_host() {
 
 # SSH to IMC first
 ssh "$IMC" << EOF
-    # Disable firewall & set timestamp on IMC
-    $(typeset -f disable_firewall)
-    $(typeset -f set_timestamp)
-    disable_firewall "Disabling firewall on IMC..."
-    set_timestamp "Setting timestamp on IMC..."
-
     # SSH to ACC from IMC
     ssh "$ACC" << REMOTE
-$(typeset -f disable_firewall)
-$(typeset -f set_timestamp)
-disable_firewall "Disabling firewall on ACC..."
-set_timestamp "Setting timestamp on ACC..."
-
 $(typeset -f cleanup)
 $(typeset -f set_hugepages)
 $(typeset -f set_interface_ip)
