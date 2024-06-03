@@ -62,7 +62,6 @@ export RUN_OVS=/opt/p4/p4-cp-nws
 
 pkill -9 ovsdb-server
 pkill -9 ovsdb-vswitchd
-export RUN_OVS=/opt/p4/p4-cp-nws
 rm -rf $RUN_OVS/etc/openvswitch
 rm -rf $RUN_OVS/var/run/openvswitch
 mkdir -p $RUN_OVS/etc/openvswitch/
