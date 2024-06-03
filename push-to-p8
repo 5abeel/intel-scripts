@@ -1,0 +1,2 @@
+scp -r ./ root@10.166.231.252:/root/sabeel/intel-scripts
+

@@ -2,11 +2,11 @@
 
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
-HOST="root@10.166.232.1"
+HOST="root@10.166.232.1" # p7 system
 
 set_pipe() {
     printf "Setting pipe..."
-    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnw-v3/lnp.pb.bin /usr/share/stratum/lnw-v3/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnw-v3/lnw-v3.pb.bin /usr/share/stratum/lnw-v3/p4Info.txt
     printf "OK\n"
 }
 
