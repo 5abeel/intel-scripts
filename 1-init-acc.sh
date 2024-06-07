@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Prerequisites:
+# 1. The es2k_skip_p4.conf is edited & verified to work
+#    correctly on this hw with correct pcie_bdf number
+# 2. the es2k_skip_p4.conf file has all VSIs with correct MAC address added to
+#    VSI-Group 1
+# 3. LNWv3 artifacts present in /usr/share/stratum/lnw-v3 folder
+
+
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
 HOST="root@10.166.232.1"
@@ -12,7 +20,7 @@ cleanup_acc() {
     pkill ovs
 
     # TODO: cleanup networking interfaces, ovs-bridge, ports etc.
-    
+
     printf "OK\n"
 }
 
@@ -108,7 +116,7 @@ probe_vfs() {
 }
 
 
-### Step 1: cleanup acc + stop idpf driver
+### Step 1: cleanup acc + stop idpf driver on host
 
 # SSH to IMC first
 ssh "$IMC" << EOF
