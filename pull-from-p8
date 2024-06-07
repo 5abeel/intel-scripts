@@ -1,2 +1,2 @@
-scp root@10.166.231.252:/root/sabeel/scripts/* ./
+scp -pr root@10.166.231.252:/root/sabeel/intel-scripts/* ./
 

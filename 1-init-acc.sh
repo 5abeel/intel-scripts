@@ -6,10 +6,19 @@ HOST="root@10.166.232.1"
 OUTPUT_DIR=/usr/share/stratum/lnw-v3
 
 
-cleanup() {
+cleanup_acc() {
     printf "Cleaning up..."
     pkill infrap4d
     pkill ovs
+
+    # TODO: cleanup networking interfaces, ovs-bridge, ports etc.
+    
+    printf "OK\n"
+}
+
+stop_idpf() {
+    printf "Stopping IDPF driver on host..."
+    rmmod idpf
     printf "OK\n"
 }
 
@@ -21,7 +30,7 @@ check_for_first_run() {
         fi
     fi
 
-    if [ ! -d "usr/share/stratum/certs" ]; then
+    if [ ! -d "/usr/share/stratum/certs" ]; then
         echo "Certs not found. Generating new certs..."
         cd /usr/share/stratum
         COMMON_NAME=10.10.0.2 ./generate-certs.sh
@@ -73,36 +82,79 @@ check_switchd_status() {
 
 set_pipe() {
     printf "Setting pipe..."
-    p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 $OUTPUT_DIR/lnp.pb.bin $OUTPUT_DIR/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnw-v3/lnw-v3.pb.bin /usr/share/stratum/lnw-v3/p4Info.txt
     printf "OK\n"
 }
 
 
-enable_idpf_on_host() {
-    printf "Bringing up IDPF + VFs on host..."
-    ssh "$HOST" "modprobe idpf"
+start_idpf() {
+    printf "Starting IDPF driver..."
+    modprobe idpf
+    printf "OK\n"
     sleep 5
-    ssh "$HOST" "echo 4 > /sys/class/net/ens801f0/device/sriov_numvfs"
+    printf "Launching VFs..."
+    echo 4 > /sys/class/net/ens801f0/device/sriov_numvfs
     printf "OK\n"
 }
+
+probe_vfs() {
+    printf "Probing VFs..."
+    HOST_VF_INTF=$(ip -br l | grep ens801f0v | grep 1c | awk '{print $1}')
+
+    echo "HOST_VF_INTF=$HOST_VF_INTF"
+
+    nmcli device set "$HOST_VF_INTF" managed no
+    ip addr add dev "$HOST_VF_INTF" 192.168.1.101/24
+}
+
+
+### Step 1: cleanup acc + stop idpf driver
 
 # SSH to IMC first
 ssh "$IMC" << EOF
     # SSH to ACC from IMC
     ssh "$ACC" << REMOTE
-$(typeset -f cleanup)
+$(typeset -f cleanup_acc)
+
+cleanup_acc
+REMOTE
+EOF
+
+ssh -t "$HOST" << EOF
+    $(typeset -f stop_idpf)
+    stop_idpf
+EOF
+
+
+### Step 2: start infrap4d, set-pipe on ACC
+
+# SSH to IMC first
+ssh "$IMC" << EOF
+    # SSH to ACC from IMC
+    ssh "$ACC" << REMOTE
 $(typeset -f check_for_first_run)
 $(typeset -f set_hugepages)
 $(typeset -f set_interface_ip)
 $(typeset -f start_infrap4d)
 $(typeset -f check_switchd_status)
+$(typeset -f set_pipe)
 
-cleanup
 check_for_first_run
 set_hugepages
 set_interface_ip
 start_infrap4d
 check_switchd_status
+set_pipe
 REMOTE
 EOF
 
+
+### Step 3: start IDPF driver on host
+
+ssh -t "$HOST" << EOF
+    $(typeset -f start_idpf)
+    $(typeset -f probe_vfs)
+    start_idpf
+    sleep 5
+    probe_vfs
+EOF
