@@ -2,7 +2,7 @@
 
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
-HOST="root@10.166.232.1" # p7 system
+HOST="root@10.166.232.1"
 
 set_pipe() {
     printf "Setting pipe..."

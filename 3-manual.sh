@@ -2,7 +2,7 @@
     |----------Host-----------------------------------------------------------------|
     |                                                                               |
     |  HOST_VF_INTF = 192.168.1.101/24                                              |
-    |  (ens801f0v1)                                                                 |
+    |  (ens801f0v2)                                                                 |
     |  (VSI 0x1C)                                                                   |
     |       |               -----------------------ACC-------------------           |
     |       |               |                                           |           |
@@ -10,11 +10,11 @@
     |       |               |       |                        |          |           |
     |       |               |   ACC_PR1_INTF            ACC_PR2_INTF    |           |
     |       |               |   (enp0s1f0d4)            (enp0s1f0d5)    |           |
-    |       ----------------|---(VSI 0x0B)              (VSI 0x0C)      |           |
+    |       |---------------|---(VSI 0x0B)              (VSI 0x0C)      |           |
     |                       |                               |           |           |
     |                       |-------------------------------|-----------|           |           
     |                                                       |                       |
-    |                                                       |---------------->PHY_PORT 0  <==============> LP ens801f0 = 192168.1.102/24
+    |                                                       |---------------->PHY_PORT 0  <==============> LP ens801f0 = 192.168.1.102/24
     |-------------------------------------------------------------------------------|
 
 
@@ -33,7 +33,7 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${HOST_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR1_PORT})"
 
  
-ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
+ACC_PR2_INTF=enp0s1f0d2  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
 PHY_PORT=0
 
 echo "ACC_PR2 - PHY_PORT:"
@@ -89,6 +89,65 @@ ovs-vsctl show
 
 
 
+# Cleanup previous bridge
+# ====================
+
+ifconfig br-intrnl down
+ovs-vsctl del-port br-intrnl enp0s1f0d5
+ovs-vsctl del-port br-intrnl enp0s1f0d4
+ovs-vsctl del-br br-intrnl
+ovs-vsctl show
+
+# On LP
+# ====
+ip addr del dev ens801f0 192.168.1.102/24
+
+
+
+# Setup br-intrnl
+# ===============
+ovs-vsctl add-br br-intrnl
+ovs-vsctl add-port br-intrnl enp0s1f0d4
+ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \
+    options:local_ip=10.1.1.1 options:remote_ip=10.1.1.2 options:key=10 options:dst_port=4789
+ifconfig br-intrnl up
+sleep 1
+
+# Setup br-tunl
+# =============
+ovs-vsctl add-br br-tunl
+ovs-vsctl add-port br-tunl enp0s1f0d5
+ifconfig br-tunl 1.1.1.1/24 up
+sleep 1
+
+ip link add dev TEP10 type dummy
+sleep 1
+ifconfig TEP10 10.1.1.1/24 up
+ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
+
+
+# On LP
+# =====
+
+ip xfrm state deleteall
+ip xfrm policy deleteall
+
+CVL_INTF=ens801f0
+
+ip link add dev TEP10 type dummy
+ifconfig TEP10 10.1.1.2/24 up
+sleep 1
+ip addr show TEP10
+
+# vxlan10 interface
+ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
+ip addr add 192.168.1.102/24 dev vxlan10
+ip link set vxlan10 up
+ip addr show vxlan10
+
+ifconfig ${CVL_INTF} 1.1.1.2/24 up
+ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
+ip addr show ${CVL_INTF}
 
 
 

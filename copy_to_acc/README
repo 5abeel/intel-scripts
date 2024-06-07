@@ -1,0 +1,3 @@
+Copy the artifacts to ACC - folder should be /usr/shares/stratum/lnw-v3
+Copy the es2k_skip_conf file to /usr/shares/stratum/es2k/ folder
+Copy the setenvvars to /root

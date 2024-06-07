@@ -13,6 +13,22 @@ cleanup() {
     printf "OK\n"
 }
 
+check_for_first_run() {
+    if [ ! -d "/opt/p4/p4-cp-nws" ]; then
+        echo "/opt/p4/p4-cp-nws does not exist"
+        if [ -f "/opt/p4.tar.gz"]; then
+            tar -xvzf /opt/p4.tar.gz
+        fi
+    fi
+
+    if [ ! -d "usr/share/stratum/certs" ]; then
+        echo "Certs not found. Generating new certs..."
+        cd /usr/share/stratum
+        COMMON_NAME=10.10.0.2 ./generate-certs.sh
+        cd -
+    fi
+}
+
 set_hugepages() {
     printf "Setting hugepages..."
     echo 512 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
@@ -75,12 +91,14 @@ ssh "$IMC" << EOF
     # SSH to ACC from IMC
     ssh "$ACC" << REMOTE
 $(typeset -f cleanup)
+$(typeset -f check_for_first_run)
 $(typeset -f set_hugepages)
 $(typeset -f set_interface_ip)
 $(typeset -f start_infrap4d)
 $(typeset -f check_switchd_status)
 
 cleanup
+check_for_first_run
 set_hugepages
 set_interface_ip
 start_infrap4d
