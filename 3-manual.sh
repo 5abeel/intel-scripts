@@ -33,17 +33,17 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${HOST_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR1_PORT})"
 
  
-ACC_PR2_INTF=enp0s1f0d2  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
+ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
 PHY_PORT=0
 
 echo "ACC_PR2 - PHY_PORT:"
 echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0c:00:05:03:18 |"
-echo "ACC_P0  | PHY_PORT=0"
+echo "ACC_P0  | PHY_PORT=${PHY_PORT}"
  
 p4rt-ctl add-entry br0 linux_networking_control.rx_source_port         "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.set_source_port(${PHY_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.rx_phy_port_to_pr_map  "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR2_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map  "user_meta.cmeta.source_port=${PHY_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR2_PORT})"
-p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi             "vmeta.common.vsi=${ACC_PR2_VSI},zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(0)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi             "vmeta.common.vsi=${ACC_PR2_VSI},zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(${PHY_PORT})"
 
 p4rt-ctl add-entry br0 linux_networking_control.ipv4_lpm_root_lut "user_meta.cmeta.bit16_zeros=4/65535,priority=2048,action=linux_networking_control.ipv4_lpm_root_lut_action(0)"
  
