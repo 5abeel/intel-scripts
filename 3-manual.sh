@@ -87,6 +87,9 @@ ovs-vsctl add-port br-intrnl enp0s1f0d5
 ifconfig br-intrnl up
 ovs-vsctl show
 
+# On LP
+#======
+ip addr add dev ens801f0 192.168.1.102/24
 
 
 # Cleanup previous bridge
@@ -151,6 +154,14 @@ ip addr show ${CVL_INTF}
 
 
 
+# Cleanup LP
+# ==========
+
+ip addr del 10.1.1.2/24 dev TEP10
+ip addr del 192.168.1.102/24 dev vxlan10
+ip addr del 1.1.1.2/24 dev ens801f0
+ip link del vxlan10
+ip link del TEP10
 
 
 
