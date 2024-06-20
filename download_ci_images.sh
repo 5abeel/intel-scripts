@@ -2,9 +2,9 @@
 
 set +xe
 
-BUILD_NUM=56934
-MANIFEST_BRANCH=trunk
-CI_OR_OD=od
+BUILD_NUM=9143
+MANIFEST_BRANCH=release
+CI_OR_OD=ci
 
 ARTIFACTORY_URL="https://ubit-artifactory-or.intel.com/artifactory/list/mountevans_sw_bsp-or-local/builds/official/mev-ts-${MANIFEST_BRANCH}/${CI_OR_OD}/mev-ts-${MANIFEST_BRANCH}-${CI_OR_OD}-${BUILD_NUM}"
 USERNAME="sabeelan"
