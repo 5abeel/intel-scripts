@@ -115,6 +115,17 @@ probe_vfs() {
     ip addr add dev "$HOST_VF_INTF" 192.168.1.101/24
 }
 
+setup_host_comms_chnl() {
+    printf "Setting up comms channel on host..."
+
+    nmcli device set ens801f0d3 managed no
+    ip addr add dev ens801f0d3 10.10.0.3/24
+
+    # Copy/overwrite certs on host from ACC (in case certs have changed)
+    rm -rf /usr/share/stratum/certs
+    scp -pr root@10.10.0.2:/usr/share/stratum/certs /usr/share/stratum
+    printf "OK\n"
+}
 
 ### Step 1: cleanup acc + stop idpf driver on host
 
@@ -162,7 +173,9 @@ EOF
 ssh -t "$HOST" << EOF
     $(typeset -f start_idpf)
     $(typeset -f probe_vfs)
+    $(typeset -f setup_host_comms_chnl)
     start_idpf
     sleep 5
     probe_vfs
+    setup_host_comms_chnl
 EOF
