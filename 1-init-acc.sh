@@ -168,7 +168,7 @@ REMOTE
 EOF
 
 
-### Step 3: start IDPF driver on host
+### Step 3: start IDPF driver on host + setup comms channel
 
 ssh -t "$HOST" << EOF
     $(typeset -f start_idpf)
