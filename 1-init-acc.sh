@@ -33,9 +33,7 @@ stop_idpf() {
 check_for_first_run() {
     if [ ! -d "/opt/p4/p4-cp-nws" ]; then
         echo "/opt/p4/p4-cp-nws does not exist"
-        if [ -f "/opt/p4.tar.gz"]; then
-            tar -xvzf /opt/p4.tar.gz
-        fi
+        tar -xvzf /opt/p4.tar.gz
     fi
 
     if [ ! -d "/usr/share/stratum/certs" ]; then
