@@ -5,13 +5,13 @@
 #    correctly on this hw with correct pcie_bdf number
 # 2. the es2k_skip_p4.conf file has all VSIs with correct MAC address added to
 #    VSI-Group 1
-# 3. LNWv3 artifacts present in /usr/share/stratum/lnw-v3 folder
+# 3. LNW artifacts present in /usr/share/stratum/lnp folder
 
 
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
 HOST="root@10.166.232.1"
-OUTPUT_DIR=/usr/share/stratum/lnw-v3
+OUTPUT_DIR=/usr/share/stratum/lnp
 
 
 cleanup_acc() {
@@ -88,7 +88,7 @@ check_switchd_status() {
 
 set_pipe() {
     printf "Setting pipe..."
-    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnw-v3/lnw-v3.pb.bin /usr/share/stratum/lnw-v3/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnp/lnp.pb.bin /usr/share/stratum/lnp/p4Info.txt
     printf "OK\n"
 }
 
