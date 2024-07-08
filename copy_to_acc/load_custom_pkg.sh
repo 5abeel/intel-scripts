@@ -1,11 +1,11 @@
 #!/bin/sh
 CP_INIT_CFG=/etc/dpcp/cfg/cp_init.cfg
 echo "Checking for custom package..."
-if [ -e fxp-net_linux-networking-v3.pkg ]; then
-    echo "Custom package fxp-net_linux-networking-v3.pkg found. Overriding default package"
-    cp  fxp-net_linux-networking-v3.pkg /etc/dpcp/package/
+if [ -e fxp-net_linux-networking.pkg ]; then
+    echo "Custom package fxp-net_linux-networking.pkg found. Overriding default package"
+    cp  fxp-net_linux-networking.pkg /etc/dpcp/package/
     rm -rf /etc/dpcp/package/default_pkg.pkg
-    ln -s /etc/dpcp/package/fxp-net_linux-networking-v3.pkg /etc/dpcp/package/default_pkg.pkg
+    ln -s /etc/dpcp/package/fxp-net_linux-networking.pkg /etc/dpcp/package/default_pkg.pkg
    sed -i 's/sem_num_pages = .*;/sem_num_pages = 28;/g' $CP_INIT_CFG
    sed -i 's/lem_num_pages = .*;/lem_num_pages = 10;/g' $CP_INIT_CFG
    sed -i 's/mod_num_pages = .*;/mod_num_pages = 2;/g' $CP_INIT_CFG
