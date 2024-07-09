@@ -19,11 +19,11 @@
 
 
 HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
-ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=14 ; ACC_PR1_PORT=30
+ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
 
 echo "HOST_VF - ACC_PR1:"
 echo "HOST_VF_INTF | 0x1c(28)   | 0x2c(44)   | ${HOST_VF_INTF} | 00:1c:00:00:03:14 |"
-echo "ACC_PR1_INTF | 0x0E(14)   | 0x1E(30)   | ${ACC_PR1_INTF} | 00:0e:00:04:03:18 |"
+echo "ACC_PR1_INTF | 0x0B(11)   | 0x1B(27)   | ${ACC_PR1_INTF} | 00:0b:00:04:03:18 |"
  
  
 p4rt-ctl add-entry br0 linux_networking_control.tx_source_port        "vmeta.common.vsi=${HOST_VF_VSI}/2047,priority=1,action=linux_networking_control.set_source_port(${HOST_VF_PORT})"
@@ -33,11 +33,11 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${HOST_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR1_PORT})"
 
  
-ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=15  ; ACC_PR2_PORT=31
+ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
 PHY_PORT=0
 
 echo "ACC_PR2 - PHY_PORT:"
-echo "ACC_PR2_INTF | 0x0F(15)   | 0x1F(31)   | ${ACC_PR2_INTF} | 00:0f:00:05:03:18 |"
+echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0f:00:05:03:18 |"
 echo "ACC_P0  | PHY_PORT=${PHY_PORT}"
  
 p4rt-ctl add-entry br0 linux_networking_control.rx_source_port         "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.set_source_port(${PHY_PORT})"
