@@ -121,6 +121,7 @@ setup_host_comms_chnl() {
 
     # Copy/overwrite certs on host from ACC (in case certs have changed)
     rm -rf /usr/share/stratum/certs
+    ssh-keyscan -t ecdsa 10.10.0.2 >> ~/.ssh/known_hosts
     scp -pr root@10.10.0.2:/usr/share/stratum/certs /usr/share/stratum
     printf "OK\n"
 }
