@@ -158,6 +158,7 @@ ip link set vxlan10 up
 ip addr show vxlan10
 
 ifconfig ${CVL_INTF} 1.1.1.2/24 up
+sleep 2
 ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
 ip addr show ${CVL_INTF}
 
