@@ -92,7 +92,10 @@ ovs-vsctl show
 #======
 ip addr add dev ens801f0 192.168.1.102/24
 
+###########################
+## Checkpoint. Test #######
 ## ping host <--> LP
+###########################
 
 ## Use case 2: VXLAN traffic
 # ==========================
@@ -131,7 +134,7 @@ sleep 1
 ip link add dev TEP10 type dummy
 sleep 1
 ifconfig TEP10 10.1.1.1/24 up
-sleep 1
+sleep 2
 ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
 
 
