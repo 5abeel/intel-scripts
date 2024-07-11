@@ -87,7 +87,7 @@ check_switchd_status() {
 }
 
 set_pipe() {
-    if [ ! -f /usr/share/stratum/lnp/lnp.pb.bin ]
+    if [ ! -f /usr/share/stratum/lnp/lnp.pb.bin ]; then
         echo "lnp.pb.bin file not found...creating one"
         touch /usr/share/stratum/lnp/tofino.bin
         /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/usr/share/stratum/lnp/lnp.pb.bin
