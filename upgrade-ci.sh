@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_DIR=/root/sabeel
-BUILD_NUM=58699
+BUILD_NUM=58888
 MANIFEST_BRANCH=trunk
 CI_OR_OD=ci
 

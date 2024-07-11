@@ -10,7 +10,7 @@
     |       |               |       |                        |          |           |
     |       |               |   ACC_PR1_INTF            ACC_PR2_INTF    |           |
     |       |               |   (enp0s1f0d4)            (enp0s1f0d5)    |           |
-    |       |---------------|---(VSI 0x0E)              (VSI 0x0F)      |           |
+    |       |---------------|---(VSI 0x0B)              (VSI 0x0C)      |           |
     |                       |                               |           |           |
     |                       |-------------------------------|-----------|           |           
     |                                                       |                       |
@@ -80,7 +80,8 @@ ovs-vsctl set Open_vSwitch . other_config:n-revalidator-threads=1
 ovs-vsctl set Open_vSwitch . other_config:n-handler-threads=1
 ovs-vsctl  show
 
-
+# Use case 1: Basic untagged traffic
+# ==================================
 ovs-vsctl add-br br-intrnl
 ovs-vsctl add-port br-intrnl enp0s1f0d4
 ovs-vsctl add-port br-intrnl enp0s1f0d5
@@ -91,6 +92,10 @@ ovs-vsctl show
 #======
 ip addr add dev ens801f0 192.168.1.102/24
 
+## ping host <--> LP
+
+## Use case 2: VXLAN traffic
+# ==========================
 
 # Cleanup previous bridge
 # ====================
@@ -126,6 +131,7 @@ sleep 1
 ip link add dev TEP10 type dummy
 sleep 1
 ifconfig TEP10 10.1.1.1/24 up
+sleep 1
 ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
 
 
@@ -152,6 +158,15 @@ ifconfig ${CVL_INTF} 1.1.1.2/24 up
 ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
 ip addr show ${CVL_INTF}
 
+
+
+# Cleanup ACC
+# ===========
+
+ovs-vsctl del-br br-intrnl
+ovs-vsctl del-br br-tunl
+pkill ovs
+pkill infrap4d             
 
 
 # Cleanup LP
