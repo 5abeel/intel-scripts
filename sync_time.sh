@@ -31,32 +31,32 @@ LOCAL_TIMESTAMP=$(TZ="America/Los_Angeles" date +"%Y-%m-%d %H:%M:%S")
 execute_commands() {
     # Execute commands on the first remote host (IMC)
     for command in "${COMMANDS[@]}"; do
-        echo "Executing command on $REMOTE_HOST_1: $command"
+        echo "Executing command on IMC: $command"
         ssh $SSH_OPTIONS "$USERNAME_1@$REMOTE_HOST_1" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the first remote host (IMC)
-    echo "Executing command on $REMOTE_HOST_1: timedatectl set-time '$LOCAL_TIMESTAMP'"
+    echo "Executing command on IMC: timedatectl set-time '$LOCAL_TIMESTAMP'"
     ssh $SSH_OPTIONS "$USERNAME_1@$REMOTE_HOST_1" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
 
     # Execute commands on the second remote host (daisy-chained) (ACC)
     for command in "${COMMANDS[@]}"; do
-        echo "Executing command on $REMOTE_HOST_2: $command"
+        echo "Executing command on ACC: $command"
         ssh $SSH_OPTIONS -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the second remote host (ACC)
-    echo "Executing command on $REMOTE_HOST_2: timedatectl set-time '$LOCAL_TIMESTAMP'"
+    echo "Executing command on ACC: timedatectl set-time '$LOCAL_TIMESTAMP'"
     ssh $SSH_OPTIONS -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
     
      # Execute commands on the third host (Host)
     for command in "${COMMANDS[@]}"; do
-        echo "Executing command on $REMOTE_HOST_3: $command"
+        echo "Executing command on Host: $command"
         ssh $SSH_OPTIONS "$USERNAME_3@$REMOTE_HOST_3" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the third remote host (Host)
-    echo "Executing command on $REMOTE_HOST_3: timedatectl set-time '$LOCAL_TIMESTAMP'"
+    echo "Executing command on Host: timedatectl set-time '$LOCAL_TIMESTAMP'"
     ssh $SSH_OPTIONS "$USERNAME_3@$REMOTE_HOST_3" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
 }
 
