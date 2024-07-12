@@ -12,6 +12,8 @@ USERNAME_2="root"
 REMOTE_HOST_3="10.166.232.1" # P7 system
 USERNAME_3="root"
 
+SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+
 # Define the commands to execute
 COMMANDS=(
     "systemctl stop firewalld"
@@ -30,35 +32,34 @@ execute_commands() {
     # Execute commands on the first remote host (IMC)
     for command in "${COMMANDS[@]}"; do
         echo "Executing command on $REMOTE_HOST_1: $command"
-        ssh "$USERNAME_1@$REMOTE_HOST_1" "$command"
+        ssh $SSH_OPTIONS "$USERNAME_1@$REMOTE_HOST_1" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the first remote host (IMC)
     echo "Executing command on $REMOTE_HOST_1: timedatectl set-time '$LOCAL_TIMESTAMP'"
-    ssh "$USERNAME_1@$REMOTE_HOST_1" "timedatectl set-time '$LOCAL_TIMESTAMP'"
+    ssh $SSH_OPTIONS "$USERNAME_1@$REMOTE_HOST_1" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
 
     # Execute commands on the second remote host (daisy-chained) (ACC)
     for command in "${COMMANDS[@]}"; do
         echo "Executing command on $REMOTE_HOST_2: $command"
-        ssh -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "$command"
+        ssh $SSH_OPTIONS -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the second remote host (ACC)
     echo "Executing command on $REMOTE_HOST_2: timedatectl set-time '$LOCAL_TIMESTAMP'"
-    ssh -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "timedatectl set-time '$LOCAL_TIMESTAMP'"
+    ssh $SSH_OPTIONS -J "$USERNAME_1@$REMOTE_HOST_1" "$USERNAME_2@$REMOTE_HOST_2" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
     
      # Execute commands on the third host (Host)
     for command in "${COMMANDS[@]}"; do
         echo "Executing command on $REMOTE_HOST_3: $command"
-        ssh "$USERNAME_3@$REMOTE_HOST_3" "$command"
+        ssh $SSH_OPTIONS "$USERNAME_3@$REMOTE_HOST_3" "$command" &>/dev/null
     done
 
     # Execute the last command with the local timestamp on the third remote host (Host)
     echo "Executing command on $REMOTE_HOST_3: timedatectl set-time '$LOCAL_TIMESTAMP'"
-    ssh "$USERNAME_3@$REMOTE_HOST_3" "timedatectl set-time '$LOCAL_TIMESTAMP'"
+    ssh $SSH_OPTIONS "$USERNAME_3@$REMOTE_HOST_3" "timedatectl set-time '$LOCAL_TIMESTAMP'" &>/dev/null
 }
 
 # Execute the commands
-echo 0 > ~/.ssh/known_hosts
 execute_commands
 
