@@ -112,10 +112,23 @@ scp $SSH_OPTIONS -r -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ARTI
 echo "Copying es2k_skip_p4.conf file to ACC..."
 scp $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ES2K_SKIP_P4_FILE $ACC:$REMOTE_PATH1_ACC/es2k/
 
-# first time, gen certs and untar p4.tar.gz
-# Run a command on ACC
-#echo "Running command on ACC..."
-#ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "your_command_here"
+## following not validated. commenting out for now
+# Check for folders and run command on ACC if necessary
+#echo "Checking folders and running command on ACC if needed..."
+#ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "
+#    if [ ! -d /opt/p4/p4sde ] || [ ! -d /opt/p4/p4-cp-nws ]; then
+#        echo 'Required folders not found. Extracting p4.tar.gz...'
+#        tar -xvzf /opt/p4.tar.gz -C /opt
+#        if [ $? -eq 0 ]; then
+#            echo 'Extraction successful'
+#        else
+#            echo 'Extraction failed'
+#            exit 1
+#        fi
+#    else
+#        echo 'Required folders already exist'
+#    fi
+#" || { echo "Failed to run command on ACC"; exit 1; }
 
 # Sync time
 echo
