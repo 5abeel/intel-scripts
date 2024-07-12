@@ -186,6 +186,25 @@ ip link del TEP10
 
 
 
+###############
+# LAG changes test
+# lag-group-id same as rif_id
+p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
+    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_lag(lag_group_id=0x4,dmac_high=0xee35,dmac_low=0xebf92f2b)"
+
+
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=0/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=0)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=1/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=1)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=2/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=0)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=3/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=1)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=4/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=0)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=5/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=1)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=6/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=0)"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=4/255,hash=7/7,priority=1,action=linux_networking_control.set_egress_port(router_interface_id=4,egress_port=1)"
+
+##############
+
+
 ======
 IPsec (manual config)
 ======

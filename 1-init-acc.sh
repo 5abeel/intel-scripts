@@ -11,11 +11,11 @@
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
 HOST="root@10.166.232.1"
-OUTPUT_DIR=/usr/share/stratum/lnp
 
+SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
 
 cleanup_acc() {
-    printf "Cleaning up..."
+    printf "Stopping infrap4d and ovs..."
     pkill infrap4d
     pkill ovs
 
@@ -26,8 +26,16 @@ cleanup_acc() {
 
 stop_idpf() {
     printf "Stopping IDPF driver on host..."
-    rmmod idpf
-    printf "OK\n"
+    if lsmod | grep -q "^idpf "; then
+        if ! rmmod idpf; then
+            printf "Failed to remove idpf module. It may be in use.\n"
+            return 1
+        fi
+        printf "OK\n"
+    else
+        printf "IDPF driver not loaded. Skipping.\n"
+    fi
+    return 0
 }
 
 check_for_first_run() {
@@ -48,15 +56,20 @@ set_hugepages() {
     printf "Setting hugepages..."
     echo 512 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
     echo 512 > /sys/devices/system/node/node0/hugepages/hugepages-1048576kB/nr_hugepages
+    printf "OK\n"
+    printf "vfio_bind..."
     modprobe vfio-pci
     /opt/p4/p4sde/bin/vfio_bind.sh 8086:1453
-    printf "OK\n"
 }
 
 set_interface_ip() {
     printf "Setting interface IP..."
     nmcli device set enp0s1f0d3 managed no
-    ip a a 10.10.0.2/24 dev enp0s1f0d3
+    if ! ip addr show dev enp0s1f0d3 | grep -q "10.10.0.2/24"; then
+        ip addr add 10.10.0.2/24 dev enp0s1f0d3
+    else
+        printf "IP already set. "
+    fi
     printf "OK\n"
 }
 
@@ -70,20 +83,19 @@ check_switchd_status() {
     retries=0
     max_retries=15
 
-    while true; do
+    while [ $retries -lt $max_retries ]; do
         if tail -5 /var/log/stratum/infrap4d.INFO | grep -q "switchd started successfully"; then
             printf "switchd started successfully\n"
-            break
+            return 0
         else
             retries=$((retries + 1))
-            if [ "$retries" -gt "$max_retries" ]; then
-                printf "Failed to start switchd after %d retries\n" "$max_retries"
-                break
-            fi
-            printf "[%d/%d] switchd not started yet, checking again in 10 seconds...\n" "$retries" "$max_retries"
+            printf "switchd not started yet, checking again in 10 seconds...\n" "$retries" "$max_retries"
             sleep 10
         fi
     done
+
+    printf "Failed to start switchd after %d retries\n" "$max_retries"
+    return 1
 }
 
 set_pipe() {
@@ -122,29 +134,31 @@ setup_host_comms_chnl() {
     printf "Setting up comms channel on host..."
 
     nmcli device set ens801f0d3 managed no
-    ip addr add dev ens801f0d3 10.10.0.3/24
+    if ! ip addr show dev ens801f0d3 | grep -q "10.10.0.3/24"; then
+        ip addr add 10.10.0.3/24 dev ens801f0d3
+    else
+        printf "IP already set. "
+    fi
 
     # Copy/overwrite certs on host from ACC (in case certs have changed)
     rm -rf /usr/share/stratum/certs
-    ssh-keygen -R 10.10.0.2
-    ssh-keyscan -t ecdsa 10.10.0.2 >> ~/.ssh/known_hosts
-    scp -pr root@10.10.0.2:/usr/share/stratum/certs /usr/share/stratum
+    scp $SSH_OPTIONS -pr root@10.10.0.2:/usr/share/stratum/certs /usr/share/stratum
     printf "OK\n"
 }
 
 ### Step 1: cleanup acc + stop idpf driver on host
 
 # SSH to IMC first
-ssh "$IMC" << EOF
+ssh $SSH_OPTIONS "$IMC" << EOF
     # SSH to ACC from IMC
-    ssh "$ACC" << REMOTE
+    ssh $SSH_OPTIONS "$ACC" << REMOTE
 $(typeset -f cleanup_acc)
 
 cleanup_acc
 REMOTE
 EOF
 
-ssh -t "$HOST" << EOF
+ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(typeset -f stop_idpf)
     stop_idpf
 EOF
@@ -153,9 +167,9 @@ EOF
 ### Step 2: start infrap4d, set-pipe on ACC
 
 # SSH to IMC first
-ssh "$IMC" << EOF
+ssh $SSH_OPTIONS "$IMC" << EOF
     # SSH to ACC from IMC
-    ssh "$ACC" << REMOTE
+    ssh $SSH_OPTIONS "$ACC" << REMOTE
 $(typeset -f check_for_first_run)
 $(typeset -f set_hugepages)
 $(typeset -f set_interface_ip)
@@ -175,7 +189,7 @@ EOF
 
 ### Step 3: start IDPF driver on host + setup comms channel
 
-ssh -t "$HOST" << EOF
+ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(typeset -f start_idpf)
     $(typeset -f probe_vfs)
     $(typeset -f setup_host_comms_chnl)
