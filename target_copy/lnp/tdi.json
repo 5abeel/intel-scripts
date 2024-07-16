@@ -310,6 +310,53 @@
       "attributes" : []
     },
     {
+      "name" : "main.linux_networking_control.always_trap_arp_table",
+      "id" : 48081556,
+      "table_type" : "MatchAction_Direct",
+      "size" : 1024,
+      "annotations" : [],
+      "depends_on" : [],
+      "has_const_default_action" : true,
+      "key" : [
+        {
+          "id" : 1,
+          "name" : "hdrs.inval.data",
+          "repeated" : false,
+          "annotations" : [],
+          "mandatory" : false,
+          "match_type" : "Exact",
+          "type" : {
+            "type" : "bytes",
+            "width" : 16
+          }
+        },
+        {
+          "id" : 2,
+          "name" : "hdrs.inval.data",
+          "repeated" : false,
+          "annotations" : [],
+          "mandatory" : false,
+          "match_type" : "Exact",
+          "type" : {
+            "type" : "bytes",
+            "width" : 16
+          }
+        }
+      ],
+      "action_specs" : [
+        {
+          "id" : 19361592,
+          "name" : "linux_networking_control.do_trap_enable",
+          "action_scope" : "TableAndDefault",
+          "annotations" : [],
+          "data" : []
+        }
+      ],
+      "data" : [],
+      "supported_operations" : [],
+      "attributes" : []
+    },
+    {
       "name" : "main.linux_networking_control.always_recirculate_table",
       "id" : 47372228,
       "table_type" : "MatchAction_Direct",

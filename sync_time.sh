@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Timezone to set
+TIMEZONE="America/Los_Angeles"
+
 # Define the first remote host and credentials
 REMOTE_HOST_1="100.0.0.100"
 USERNAME_1="root"
@@ -21,11 +24,17 @@ COMMANDS=(
     "timedatectl set-local-rtc 0"
     "timedatectl set-ntp true"
     "systemctl disable --now chronyd"
-    "timedatectl set-timezone 'America/Los_Angeles'"
+    "timedatectl set-timezone '$TIMEZONE'"
 )
 
 # Get the current timestamp from the local machine
-LOCAL_TIMESTAMP=$(TZ="America/Los_Angeles" date +"%Y-%m-%d %H:%M:%S")
+LOCAL_TIMESTAMP=$(TZ="$TIMEZONE" date +"%Y-%m-%d %H:%M:%S")
+
+# Function to refresh SSH keys
+refresh_keys() {
+    ssh-keygen -R 100.0.0.100
+    ssh-keyscan -t ecdsa 100.0.0.100 >> ~/.ssh/known_hosts
+}
 
 # Function to execute commands on the remote hosts
 execute_commands() {
@@ -61,5 +70,6 @@ execute_commands() {
 }
 
 # Execute the commands
+refresh_keys
 execute_commands
 

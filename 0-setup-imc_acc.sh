@@ -9,6 +9,7 @@ LOCAL_ARTIFACTS_FOLDER="./target_copy/lnp"
 LOCAL_PKG_FILE="./target_copy/lnp/fxp-net_linux-networking.pkg"
 LOCAL_CUSTOM_LOAD_FILE="./target_copy/load_custom_pkg.sh"
 LOCAL_ES2K_SKIP_P4_FILE="./target_copy/es2k_skip_p4.conf"
+LOCAL_ACC_ENV_SETUP_FILE="./target_copy/setup_acc_env.sh"
 
 REMOTE_PATH1_IMC="/work/scripts/"
 REMOTE_FILES_TO_DELETE_IMC=("fxp-net_linux-networking.pkg" "load_custom_pkg.sh")  # Files to delete on IMC
@@ -111,6 +112,8 @@ echo "Copying artifacts folder to ACC..."
 scp $SSH_OPTIONS -r -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ARTIFACTS_FOLDER $ACC:$REMOTE_PATH1_ACC
 echo "Copying es2k_skip_p4.conf file to ACC..."
 scp $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ES2K_SKIP_P4_FILE $ACC:$REMOTE_PATH1_ACC/es2k/
+echo "Copying setup_acc_env.sh to ACC..."
+scp $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ACC_ENV_SETUP_FILE $ACC:~/
 
 ## following not validated. commenting out for now
 # Check for folders and run command on ACC if necessary
