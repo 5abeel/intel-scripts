@@ -4,7 +4,7 @@
 TIMEZONE="America/Los_Angeles"
 
 IMC="root@100.0.0.100"
-ACC="192.168.0.2"
+ACC="root@192.168.0.2"
 HOST="root@10.166.232.1" # P7 system
 
 SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
@@ -32,8 +32,8 @@ refresh_imc_key_on_local_machine() {
 # Function to update ACC key on IMC
 refresh_acc_key_on_imc() {
     echo "Updating ACC key on IMC..."
-    ssh $SSH_OPTIONS "$IMC" "ssh-keygen -R $ACC"
-    ssh $SSH_OPTIONS "$IMC" "ssh-keyscan -t ecdsa $ACC >> ~/.ssh/known_hosts"
+    ssh $SSH_OPTIONS "$IMC" "ssh-keygen -R 192.168.0.2"
+    ssh $SSH_OPTIONS "$IMC" "ssh-keyscan -t ecdsa 192.168.0.2 >> ~/.ssh/known_hosts"
 }
 
 # Function to execute commands on the remote hosts
