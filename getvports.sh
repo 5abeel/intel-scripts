@@ -4,6 +4,15 @@
 # Port Representors Maps on Host and ACC
 #===========================================
 
+IMC=100.0.0.100
+ACC=192.168.0.2
+HOST="10.166.232.1" # P7 system
+
+SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+
+# The script to be executed on the host
+REMOTE_SCRIPT=$(cat << 'EOF'
+
 # devlink vport assignments from setup_infra.sh
 IDPF_PF_VPORT=0 ; IDPF_COMMS_VPORT=3 ; IDPF_ARP_PROXY_VPORT=4
 
@@ -25,7 +34,7 @@ for port in ${idpf_ports} ; do
         IDPF_VSI_ID_HEX=$(echo "${IDPF_NET_MAC}" | awk -F: "{print \$2}" | tr "[:lower:]" "[:upper:]") ; \
         IDPF_VSI_ID_DEC=$(echo "ibase=16; ${IDPF_VSI_ID_HEX}" | bc) ; \
         IDPF_VSI_PORT_DEC=$((IDPF_VSI_ID_DEC + 16)) ; \
-        IDPF_VSI_PORT_HEX=$(echo "obase=16 ; ${IDPF_VSI_PORT_DEC}" | bc) ; \
+        IDPF_VSI_PORT_HEX=$(printf '%X' ${IDPF_VSI_PORT_DEC}) ; \
         arr=("${IDPF_VSI_ID_HEX}" "${IDPF_VSI_ID_DEC}" "${IDPF_VSI_PORT_HEX}" "${IDPF_VSI_PORT_DEC}"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}") ; \
         printf "| %-10s | %-10s | %-10s | %-15s | %-15s |\n" "0x${IDPF_VSI_ID_HEX}(${IDPF_VSI_ID_DEC})" "0x${IDPF_VSI_PORT_HEX}(${IDPF_VSI_PORT_DEC})"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}"  ; \
         idpf_array+=("${arr[@]}") ; \
@@ -47,31 +56,41 @@ for port in ${idpf_vf_ports} ; do
         IDPF_VSI_ID_HEX=$(echo "${IDPF_NET_MAC}" | awk -F: "{print \$2}" | tr "[:lower:]" "[:upper:]") ; \
         IDPF_VSI_ID_DEC=$(echo "ibase=16; ${IDPF_VSI_ID_HEX}" | bc) ; \
         IDPF_VSI_PORT_DEC=$((IDPF_VSI_ID_DEC + 16)) ; \
-        IDPF_VSI_PORT_HEX=$(echo "obase=16 ; ${IDPF_VSI_PORT_DEC}" | bc) ; \
+        IDPF_VSI_PORT_HEX=$(printf '%X' ${IDPF_VSI_PORT_DEC}) ; \
         arr=("${IDPF_VSI_ID_HEX}" "${IDPF_VSI_ID_DEC}" "${IDPF_VSI_PORT_HEX}" "${IDPF_VSI_PORT_DEC}"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}") ; \
         printf "| %-10s | %-10s | %-10s | %-15s | %-15s |\n" "0x${IDPF_VSI_ID_HEX}(${IDPF_VSI_ID_DEC})" "0x${IDPF_VSI_PORT_HEX}(${IDPF_VSI_PORT_DEC})"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}"  ; \
         idpf_vf_array+=("${arr[@]}") ; \
 done
+EOF
+)
+
+# Execute the script on the remote machine
+ssh $SSH_OPTIONS root@${HOST} "bash -s" << EOF
+$REMOTE_SCRIPT
+EOF
+
+
+#### Get ACC port data
 
 printf "\n%-30s\n" '-ACC IDPF PORTS:-'
 printf "%s\n" '-------------------------------------------------------------------------'
 printf '| %-10s | %-10s | %-10s | %-15s | %-15s |\n' "VSI"  "PORT"  "  NETDEV"  "  MAC"  "  IP"
 printf "%s\n" '-------------------------------------------------------------------------'
 
-ACC_COMMS_IP=10.10.0.2
-ssh -o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${ACC_COMMS_IP} \
+ssh $SSH_OPTIONS root@${IMC} \
+    "ssh $SSH_OPTIONS root@${ACC} \
     'declare -a idpf_array=() ; \
-    idpf_ports=$(realpath /sys/class/net/*/dev_port | grep  $(lspci -nnkd 8086:1452 | awk  "NR==1{print \$1}") | sort) ; \
-    for port in ${idpf_ports} ; do \
-        netpath=$(dirname $port) ; \
-        IDPF_NET_NAME=$(basename $netpath) ; \
-        IDPF_NET_MAC=$(head $netpath/address) ; \
-        IDPF_NET_IP=$(ifconfig ${IDPF_NET_NAME} | grep "inet " | awk "{print \$2}") ; \
-        IDPF_VSI_ID_HEX=$(echo "${IDPF_NET_MAC}" | awk -F: "{print \$2}" | tr "[:lower:]" "[:upper:]") ; \
-        IDPF_VSI_ID_DEC=$(echo "ibase=16; ${IDPF_VSI_ID_HEX}" | bc) ; \
-        IDPF_VSI_PORT_DEC=$((IDPF_VSI_ID_DEC + 16)) ; \
-        IDPF_VSI_PORT_HEX=$(echo "obase=16 ; ${IDPF_VSI_PORT_DEC}" | bc) ; \
-        arr=("${IDPF_VSI_ID_HEX}" "${IDPF_VSI_ID_DEC}" "${IDPF_VSI_PORT_HEX}" "${IDPF_VSI_PORT_DEC}"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}") ; \
-        printf "| %-10s | %-10s | %-10s | %-15s | %-15s |\n" "0x${IDPF_VSI_ID_HEX}(${IDPF_VSI_ID_DEC})" "0x${IDPF_VSI_PORT_HEX}(${IDPF_VSI_PORT_DEC})"  "${IDPF_NET_NAME}" "${IDPF_NET_MAC}" "${IDPF_NET_IP}"  ; \
-        idpf_array+=("${arr[@]}") ; \
-    done'
+    idpf_ports=\$(realpath /sys/class/net/*/dev_port | grep  \$(lspci -nnkd 8086:1452 | awk  \"NR==1{print \\\$1}\") | sort) ; \
+    for port in \${idpf_ports} ; do \
+        netpath=\$(dirname \$port) ; \
+        IDPF_NET_NAME=\$(basename \$netpath) ; \
+        IDPF_NET_MAC=\$(head \$netpath/address) ; \
+        IDPF_NET_IP=\$(ifconfig \${IDPF_NET_NAME} | grep \"inet \" | awk \"{print \\\$2}\") ; \
+        IDPF_VSI_ID_HEX=\$(echo \"\${IDPF_NET_MAC}\" | awk -F: \"{print \\\$2}\" | tr \"[:lower:]\" \"[:upper:]\") ; \
+        IDPF_VSI_ID_DEC=\$(echo \"ibase=16; \${IDPF_VSI_ID_HEX}\" | bc) ; \
+        IDPF_VSI_PORT_DEC=\$((IDPF_VSI_ID_DEC + 16)) ; \
+        IDPF_VSI_PORT_HEX=\$(echo \"obase=16 ; \${IDPF_VSI_PORT_DEC}\" | bc) ; \
+        arr=(\"\${IDPF_VSI_ID_HEX}\" \"\${IDPF_VSI_ID_DEC}\" \"\${IDPF_VSI_PORT_HEX}\" \"\${IDPF_VSI_PORT_DEC}\"  \"\${IDPF_NET_NAME}\" \"\${IDPF_NET_MAC}\" \"\${IDPF_NET_IP}\") ; \
+        printf \"| %-10s | %-10s | %-10s | %-15s | %-15s |\\n\" \"0x\${IDPF_VSI_ID_HEX}(\${IDPF_VSI_ID_DEC})\" \"0x\${IDPF_VSI_PORT_HEX}(\${IDPF_VSI_PORT_DEC})\"  \"\${IDPF_NET_NAME}\" \"\${IDPF_NET_MAC}\" \"\${IDPF_NET_IP}\"  ; \
+        idpf_array+=(\"\${arr[@]}\") ; \
+    done'"

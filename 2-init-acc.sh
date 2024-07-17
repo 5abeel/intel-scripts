@@ -195,3 +195,7 @@ ssh $SSH_OPTIONS -t "$HOST" << EOF
     probe_vfs
     setup_host_comms_chnl
 EOF
+
+### Step 4: Print host and ACC IDPF port data
+
+./getvports.sh
