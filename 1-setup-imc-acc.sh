@@ -120,8 +120,7 @@ echo
 echo "Sync'ing time..."
 ./sync_time.sh
 
-## following not validated. commenting out for now
-# Check for folders and run command on ACC if necessary
+# Check for folders and extract p4.tar.gz on ACC if first time
 echo "Checking folders and running command on ACC if needed..."
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "
     if [ ! -d /opt/p4/p4sde ] || [ ! -d /opt/p4/p4-cp-nws ]; then
