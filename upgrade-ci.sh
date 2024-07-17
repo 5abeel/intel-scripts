@@ -14,8 +14,8 @@ function cleanup() {
 }
 
 function download() {
-    wget --user=$USERNAME --password=")S*975:a2024" $ARTIFACTORY_URL/deploy-sdk/oem_generic/intel-ipu-eval-ssd-image-ts.${MANIFEST_BRANCH}.${BUILD_NUM}.tar.gz
-    wget --user=$USERNAME --password=")S*975:a2024" $ARTIFACTORY_URL/deploy-sdk/internal_only/hw-flash-internal.ts.${MANIFEST_BRANCH}.${BUILD_NUM}.tgz
+    wget --user=$USERNAME --ask-password $ARTIFACTORY_URL/deploy-sdk/oem_generic/intel-ipu-eval-ssd-image-ts.${MANIFEST_BRANCH}.${BUILD_NUM}.tar.gz
+    wget --user=$USERNAME --ask-password $ARTIFACTORY_URL/deploy-sdk/internal_only/hw-flash-internal.ts.${MANIFEST_BRANCH}.${BUILD_NUM}.tgz
 }
 
 function unzip_images() {
