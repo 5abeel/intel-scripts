@@ -111,7 +111,7 @@ set_pipe() {
 
 
 start_idpf() {
-    printf "Starting IDPF driver..."
+    printf "Starting IDPF driver on host..."
     modprobe idpf
     printf "OK\n"
     sleep 5

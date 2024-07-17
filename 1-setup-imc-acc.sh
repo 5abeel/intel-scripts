@@ -115,27 +115,33 @@ scp $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ES2K_SK
 echo "Copying setup_acc_env.sh to ACC..."
 scp $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $LOCAL_ACC_ENV_SETUP_FILE $ACC:~/
 
-## following not validated. commenting out for now
-# Check for folders and run command on ACC if necessary
-#echo "Checking folders and running command on ACC if needed..."
-#ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "
-#    if [ ! -d /opt/p4/p4sde ] || [ ! -d /opt/p4/p4-cp-nws ]; then
-#        echo 'Required folders not found. Extracting p4.tar.gz...'
-#        tar -xvzf /opt/p4.tar.gz -C /opt
-#        if [ $? -eq 0 ]; then
-#            echo 'Extraction successful'
-#        else
-#            echo 'Extraction failed'
-#            exit 1
-#        fi
-#    else
-#        echo 'Required folders already exist'
-#    fi
-#" || { echo "Failed to run command on ACC"; exit 1; }
-
 # Sync time
 echo
 echo "Sync'ing time..."
 ./sync_time.sh
+
+## following not validated. commenting out for now
+# Check for folders and run command on ACC if necessary
+echo "Checking folders and running command on ACC if needed..."
+ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "
+    if [ ! -d /opt/p4/p4sde ] || [ ! -d /opt/p4/p4-cp-nws ]; then
+        echo 'p4-cp-nws and p4sde folders not found. Extracting p4.tar.gz...'
+        tar -xvzf /opt/p4.tar.gz -C /opt
+        if [ $? -eq 0 ]; then
+            echo 'Extraction successful'
+        else
+            echo 'Extraction failed'
+            exit 1
+        fi
+    else
+        echo 'Required folders already exist'
+    fi
+" || { echo "Failed to run command on ACC"; exit 1; }
+
+
+# Run vfio_bind on ACC
+echo
+echo "Running vfio_bind on ACC to get pcie_bdf and iommu_grp_number..."
+ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "modprobe vfio-pci && /opt/p4/p4sde/bin/vfio_bind.sh 8086:1453"
 
 echo "Setup complete!"
