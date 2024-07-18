@@ -191,7 +191,8 @@ ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(typeset -f probe_vfs)
     $(typeset -f setup_host_comms_chnl)
     start_idpf
-    sleep 5
+    echo "Pausing 10s for all VFs to come up..."
+    sleep 10
     probe_vfs
     setup_host_comms_chnl
 EOF
