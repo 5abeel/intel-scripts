@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# User-defined environment variable
+# MODE defines if configuring UNTAGGED or VXLAN on ovs/acc
 MODE=${MODE:-VXLAN}  # Default to VXLAN if not set
 # To use UNTAGGED, run script `MODE=UNTAGGED ./3-auto.sh`
 
-# Define environment variables
 IMC="root@100.0.0.100"
 ACC="root@192.168.0.2"
 HOST="root@10.166.232.1" # P7 system
@@ -20,7 +19,6 @@ SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogL
 
 get_mac_address() {
     local interface=$1
-    # Get the MAC address
     local mac_address=$(ip link show "$interface" | awk '/ether/ {print $2}')
     echo "$mac_address"
 }
@@ -48,9 +46,6 @@ read VSI_HOST MAC_HOST < <(ssh $SSH_OPTIONS "$HOST" "
     echo \$VSI \$MAC_ADDRESS
 ")
 
-# echo "VSI from Host ($HOST_VF_INTF): $VSI_HOST"
-# echo "MAC address of Host ($HOST_VF_INTF): $MAC_HOST"
-
 # Ensure VSI_HOST is not empty
 if [ -z "$VSI_HOST" ]; then
     echo "Failed to retrieve VSI from Host."
@@ -74,11 +69,6 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     MAC_ACC_PR2=\$(get_mac_address "$ACC_PR2_INTF")
     VSI_ACC_PR2=\$(get_second_byte "\$MAC_ACC_PR2")
 
-    # echo "VSI from ACC ($ACC_PR1_INTF): \$VSI_ACC_PR1"
-    # echo "MAC address of ACC ($ACC_PR1_INTF): \$MAC_ACC_PR1"
-    # echo "VSI from ACC ($ACC_PR2_INTF): \$VSI_ACC_PR2"
-    # echo "MAC address of ACC ($ACC_PR2_INTF): \$MAC_ACC_PR2"
-
     # Ensure VSI_ACC_PR1 and VSI_ACC_PR2 are not empty
     if [ -z "\$VSI_ACC_PR1" ] || [ -z "\$VSI_ACC_PR2" ]; then
         echo "Failed to retrieve VSI from ACC interfaces."
@@ -95,12 +85,11 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     ACC_PR1_PORT=\$((ACC_PR1_VSI + 16))
     ACC_PR2_PORT=\$((ACC_PR2_VSI + 16))
 
-    # Export the environment variables
+    # Export the VSI & PORT values
     export HOST_VF_VSI HOST_VF_PORT
     export ACC_PR1_VSI ACC_PR1_PORT
     export ACC_PR2_VSI ACC_PR2_PORT
 
-    # Run commands using the VSI and PORT values
     echo "Running commands on ACC with VSI and PORT values..."
     echo "Host VF interface: $HOST_VF_INTF, MAC: $MAC_HOST, VSI: \$HOST_VF_VSI, Port: \$HOST_VF_PORT"
     echo "ACC PR1 interface: $ACC_PR1_INTF, MAC: \$MAC_ACC_PR1, VSI: \$ACC_PR1_VSI, Port: \$ACC_PR1_PORT"
