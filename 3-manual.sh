@@ -37,7 +37,7 @@ ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
 PHY_PORT=0
 
 echo "ACC_PR2 - PHY_PORT:"
-echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0f:00:05:03:18 |"
+echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0c:00:05:03:18 |"
 echo "ACC_P0  | PHY_PORT=${PHY_PORT}"
  
 p4rt-ctl add-entry br0 linux_networking_control.rx_source_port         "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.set_source_port(${PHY_PORT})"
