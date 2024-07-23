@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Define variables
-IMC="root@100.0.0.100"
-ACC="root@192.168.0.2"
-HOST="root@10.166.232.1"
-SSH_OPTIONS="-o StrictHostKeyChecking=no -o ConnectTimeout=5"
+# Source the environment file
+source ./config.env
 
 # Function to check if a machine is up
 check_machine_up() {

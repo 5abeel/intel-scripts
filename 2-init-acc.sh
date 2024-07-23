@@ -7,12 +7,8 @@
 #    VSI-Group 1
 # 3. LNW artifacts present in /usr/share/stratum/lnp folder
 
-
-IMC="root@100.0.0.100"
-ACC="root@192.168.0.2"
-HOST="root@10.166.232.1"
-
-SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+# Source the environment file
+source ./config.env
 
 cleanup_acc() {
     printf "Stopping infrap4d and ovs..."
@@ -103,7 +99,6 @@ set_pipe() {
     /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnp/lnp.pb.bin /usr/share/stratum/lnp/p4Info.txt
     printf "OK\n"
 }
-
 
 start_idpf() {
     printf "Starting IDPF driver on host..."

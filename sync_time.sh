@@ -1,13 +1,10 @@
 #!/bin/bash
 
+# Source the environment file
+source ./config.env
+
 # Timezone to set
 TIMEZONE="America/Los_Angeles"
-
-IMC="root@100.0.0.100"
-ACC="root@192.168.0.2"
-HOST="root@10.166.232.1" # P7 system
-
-SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
 
 # Define the commands to execute
 COMMANDS=(

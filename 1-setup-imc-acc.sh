@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Define variables
-IMC="root@100.0.0.100"
-ACC="root@192.168.0.2"
-HOST="root@10.166.232.1"
+# Source the environment file
+source ./config.env
 
 LOCAL_ARTIFACTS_FOLDER="./target_copy/lnp"
 LOCAL_PKG_FILE="./target_copy/lnp/fxp-net_linux-networking.pkg"
@@ -15,10 +13,6 @@ REMOTE_PATH1_IMC="/work/scripts/"
 REMOTE_FILES_TO_DELETE_IMC=("fxp-net_linux-networking.pkg" "load_custom_pkg.sh")  # Files to delete on IMC
 REMOTE_PATH1_ACC="/usr/share/stratum/"
 REMOTE_ACC_PKG_NAME="lnp"
-
-# SSH options to suppress warnings and errors
-SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
-
 
 # Run command on host
 echo "Stopping IDPF on host..."
@@ -77,7 +71,7 @@ echo "Checking for specific values in IMC..."
 if ssh $SSH_OPTIONS $IMC "
     [ -L /etc/dpcp/package/default_pkg.pkg ] && [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp-net_linux-networking.pkg' ] &&
     grep -q 'sem_num_pages = 28' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'lem_num_pages = 10' /etc/dpcp/cfg/default_cp_init.cfg &&
+    grep -q 'lem_num_pages = 32' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'mod_num_pages = 2' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'acc_apf = 16' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'cpf_host = 4' /etc/dpcp/cfg/default_cp_init.cfg &&

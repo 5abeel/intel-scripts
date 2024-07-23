@@ -229,7 +229,7 @@ devmem 0x2024E02400 32 0x80000000
 # Add routing interface and add to nextop table
 
 # HOST_VF_INTF
-# ens801f0v0 : 00:1c:00:00:03:14
+# ens801f0v0 : 00:1c:00:00:03:14 <-- 192.168.1.101 MAC address
  
 p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_start \
     "rif_mod_map_id0=0x0005,action=linux_networking_control.set_src_mac_start(arg=0x001c)"
@@ -241,11 +241,11 @@ p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_last \
 # table nexthop_table - Add router interface (0x05)
  
 # CVL_HOST - nexthop - use LP's phy0 interface MAC address
-# ens801f0         UP             6c:fe:54:47:44:70
+# ens801f0         UP             6c:fe:54:47:44:70 <-- LP IPSEC tunnel MAC 192.168.1.102                                                               ee:35:eb:f9:2f:2b
 p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
-    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0x6cfe,dmac_low=0x54474470)"
+    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0xee35,dmac_low=0xebf92f2b)"
  
-# Add to ipv4_table
+# Add to ipv4_table <-- entry for IPsec tunnel routing lookup
 p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
     "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
 

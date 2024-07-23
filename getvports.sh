@@ -4,11 +4,8 @@
 # Port Representors Maps on Host and ACC
 #===========================================
 
-IMC=100.0.0.100
-ACC=192.168.0.2
-HOST="10.166.232.1" # P7 system
-
-SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+# Source the environment file
+source ./config.env
 
 # The script to be executed on the host
 REMOTE_SCRIPT=$(cat << 'EOF'
@@ -65,7 +62,7 @@ EOF
 )
 
 # Execute the script on the remote machine
-ssh $SSH_OPTIONS root@${HOST} "bash -s" << EOF
+ssh $SSH_OPTIONS ${HOST} "bash -s" << EOF
 $REMOTE_SCRIPT
 EOF
 
@@ -77,8 +74,8 @@ printf "%s\n" '-----------------------------------------------------------------
 printf '| %-10s | %-10s | %-10s | %-15s | %-15s |\n' "VSI"  "PORT"  "  NETDEV"  "  MAC"  "  IP"
 printf "%s\n" '-------------------------------------------------------------------------'
 
-ssh $SSH_OPTIONS root@${IMC} \
-    "ssh $SSH_OPTIONS root@${ACC} \
+ssh $SSH_OPTIONS ${IMC} \
+    "ssh $SSH_OPTIONS ${ACC} \
     'declare -a idpf_array=() ; \
     idpf_ports=\$(realpath /sys/class/net/*/dev_port | grep  \$(lspci -nnkd 8086:1452 | awk  \"NR==1{print \\\$1}\") | sort) ; \
     for port in \${idpf_ports} ; do \
