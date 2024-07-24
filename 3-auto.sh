@@ -134,7 +134,12 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
         sleep 1
         ifconfig TEP10 10.1.1.1/24 up
         sleep 2
-        ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
+        # ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
+        # Attempt 'ip route change', if it fails, try 'ip route add'
+        if ! ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl; then
+            echo "ip route change failed, attempting ip route add..."
+            ip route add 10.1.1.0/24 via 1.1.1.2 dev br-tunl
+        fi
         ovs-vsctl show
     else
         echo "Invalid MODE specified. Please use UNTAGGED or VXLAN."
@@ -163,7 +168,12 @@ elif [ "$MODE" = "VXLAN" ]; then
         ip addr show vxlan10
         ifconfig $CVL_INTF 1.1.1.2/24 up
         sleep 2
-        ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
+        # ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
+        # Attempt 'ip route change', if it fails, try 'ip route add'
+        if ! ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF; then
+            echo "ip route change failed, attempting ip route add..."
+            ip route add 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
+        fi
         ip addr show $CVL_INTF
 LP_EOF
 else

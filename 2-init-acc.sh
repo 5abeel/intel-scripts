@@ -110,16 +110,6 @@ start_idpf() {
     printf "OK\n"
 }
 
-probe_vfs() {
-    printf "Probing VFs..."
-    HOST_VF_INTF=$(ip -br l | grep ens801f0v | grep 1c | awk '{print $1}')
-
-    echo "HOST_VF_INTF=$HOST_VF_INTF"
-
-    nmcli device set "$HOST_VF_INTF" managed no
-    ip addr add dev "$HOST_VF_INTF" 192.168.1.101/24
-}
-
 setup_host_comms_chnl() {
     printf "Setting up comms channel on host..."
 
@@ -183,12 +173,10 @@ EOF
 
 ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(typeset -f start_idpf)
-    $(typeset -f probe_vfs)
     $(typeset -f setup_host_comms_chnl)
     start_idpf
     echo "Pausing 10s for all VFs to come up..."
     sleep 10
-    probe_vfs
     setup_host_comms_chnl
 EOF
 

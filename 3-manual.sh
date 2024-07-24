@@ -21,6 +21,10 @@
 HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
 ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
 
+nmcli device set "$HOST_VF_INTF" managed no
+ip addr add dev "$HOST_VF_INTF" 192.168.1.101/24
+
+
 echo "HOST_VF - ACC_PR1:"
 echo "HOST_VF_INTF | 0x1c(28)   | 0x2c(44)   | ${HOST_VF_INTF} | 00:1c:00:00:03:14 |"
 echo "ACC_PR1_INTF | 0x0B(11)   | 0x1B(27)   | ${ACC_PR1_INTF} | 00:0b:00:04:03:18 |"
