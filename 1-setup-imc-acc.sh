@@ -21,21 +21,22 @@ ssh $SSH_OPTIONS $HOST "rmmod idpf"
 
 # Function to check if a machine is up
 check_machine_up() {
-    local machine=$1
+    local machine_name=$1
+    local machine_ip=$2
     local max_attempts=30
     local attempt=1
 
-    echo "Waiting for $machine to come up..."
+    echo "Waiting for $machine_name to come up..."
     while [ $attempt -le $max_attempts ]; do
-        if ssh $SSH_OPTIONS $machine "exit" &>/dev/null; then
-            echo "$machine is up!"
+        if ssh $SSH_OPTIONS $machine_ip "exit" &>/dev/null; then
+            echo "$machine_name is up!"
             return 0
         fi
-        echo "Attempt $attempt: $machine not yet accessible. Waiting..."
+        echo "Attempt $attempt: $machine_name not yet accessible. Waiting..."
         sleep 10
         ((attempt++))
     done
-    echo "Error: $machine did not come up after $max_attempts attempts."
+    echo "Error: $machine_name did not come up after $max_attempts attempts."
     return 1
 }
 
@@ -61,7 +62,7 @@ ssh $SSH_OPTIONS $IMC "reboot"
 sleep 2
 
 # Wait for IMC to come up
-if ! check_machine_up $IMC; then
+if ! check_machine_up "IMC" $IMC; then
     echo "Failed to connect to IMC. Exiting."
     exit 1
 fi

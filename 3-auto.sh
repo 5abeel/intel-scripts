@@ -39,30 +39,35 @@ fi
 
 # Use SSH ProxyCommand to connect to ACC through IMC
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
-    echo "Connected to ACC through IMC"
     # Source the environment file
     source ~/setup_acc_env.sh
+    
     # Function to retrieve the MAC address and second byte
     $(declare -f get_mac_address)
     $(declare -f get_second_byte)
+    
     # Get VSIs and MAC addresses from ACC
     MAC_ACC_PR1=\$(get_mac_address "$ACC_PR1_INTF")
     VSI_ACC_PR1=\$(get_second_byte "\$MAC_ACC_PR1")
     MAC_ACC_PR2=\$(get_mac_address "$ACC_PR2_INTF")
     VSI_ACC_PR2=\$(get_second_byte "\$MAC_ACC_PR2")
+    
     # Ensure VSI_ACC_PR1 and VSI_ACC_PR2 are not empty
     if [ -z "\$VSI_ACC_PR1" ] || [ -z "\$VSI_ACC_PR2" ]; then
         echo "Failed to retrieve VSI from ACC interfaces."
         exit 1
     fi
+    
     # Convert VSI values to decimal
     HOST_VF_VSI=\$((0x$VSI_HOST))
     ACC_PR1_VSI=\$((0x\$VSI_ACC_PR1))
     ACC_PR2_VSI=\$((0x\$VSI_ACC_PR2))
+    
     # Port numbers (VSI+16)
     HOST_VF_PORT=\$((HOST_VF_VSI + 16))
     ACC_PR1_PORT=\$((ACC_PR1_VSI + 16))
     ACC_PR2_PORT=\$((ACC_PR2_VSI + 16))
+    
     # Export the VSI & PORT values
     export HOST_VF_VSI HOST_VF_PORT
     export ACC_PR1_VSI ACC_PR1_PORT
@@ -71,7 +76,9 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     echo "Host VF interface: $HOST_VF_INTF, MAC: $MAC_HOST, VSI: \$HOST_VF_VSI, Port: \$HOST_VF_PORT"
     echo "ACC PR1 interface: $ACC_PR1_INTF, MAC: \$MAC_ACC_PR1, VSI: \$ACC_PR1_VSI, Port: \$ACC_PR1_PORT"
     echo "ACC PR2 interface: $ACC_PR2_INTF, MAC: \$MAC_ACC_PR2, VSI: \$ACC_PR2_VSI, Port: \$ACC_PR2_PORT"
+    
     # Add the provided commands using \$P4RT_CTL_CMD
+    echo "Programming P4 tables..."
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.tx_source_port "vmeta.common.vsi=\$HOST_VF_VSI/2047,priority=1,action=linux_networking_control.set_source_port(\$HOST_VF_PORT)"
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.tx_acc_vsi "vmeta.common.vsi=\$ACC_PR1_VSI,zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(\$HOST_VF_PORT)"
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.vsi_to_vsi_loopback "vmeta.common.vsi=\$ACC_PR1_VSI,target_vsi=\$HOST_VF_VSI,action=linux_networking_control.fwd_to_vsi(\$HOST_VF_PORT)"
@@ -90,6 +97,9 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=5/7,priority=1,action=linux_networking_control.bypass"
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=6/7,priority=1,action=linux_networking_control.bypass"
     \$P4RT_CTL_CMD add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=7/7,priority=1,action=linux_networking_control.bypass"
+    
+    # Start OVS
+    echo "Starting OVS..."
     export RUN_OVS=/opt/p4/p4-cp-nws
     pkill -9 ovsdb-server
     pkill -9 ovsdb-vswitchd
@@ -109,17 +119,17 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     --log-file=/tmp/logs/ovs-vswitchd.log --grpc-addr="10.10.0.2"
     ovs-vsctl set Open_vSwitch . other_config:n-revalidator-threads=1
     ovs-vsctl set Open_vSwitch . other_config:n-handler-threads=1
-    ovs-vsctl show
+    
     # Run mode-specific commands
     if [ "$MODE" = "UNTAGGED" ]; then
-        echo "Running UNTAGGED mode commands..."
+        echo "Adding OVS bridge and adding ports (UNTAGGED mode)..."
         ovs-vsctl add-br br-intrnl
         ovs-vsctl add-port br-intrnl $ACC_PR1_INTF
         ovs-vsctl add-port br-intrnl $ACC_PR2_INTF
         ifconfig br-intrnl up
         ovs-vsctl show
     elif [ "$MODE" = "VXLAN" ]; then
-        echo "Running VXLAN mode commands..."
+        echo "Adding OVS bridge and adding ports (VXLAN mode)..."
         ovs-vsctl add-br br-intrnl
         ovs-vsctl add-port br-intrnl $ACC_PR1_INTF
         ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \\
@@ -147,12 +157,17 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     fi
 EOF
 
+echo ""
+echo ">> ACC config completed!"
+echo ""
+echo "Configuring LP interfaces..."
 # SSH into LP and configure the interface based on MODE
 if [ "$MODE" = "UNTAGGED" ]; then
     ssh $SSH_OPTIONS "$LP" << LP_EOF
         echo "Configuring LP interface for UNTAGGED mode..."
         ip addr add $CVL_INTF_IP dev $CVL_INTF
         ip link set $CVL_INTF up
+        ip -br a
 LP_EOF
 elif [ "$MODE" = "VXLAN" ]; then
     ssh $SSH_OPTIONS "$LP" << LP_EOF
@@ -160,12 +175,12 @@ elif [ "$MODE" = "VXLAN" ]; then
         ip link add dev TEP10 type dummy
         ifconfig TEP10 10.1.1.2/24 up
         sleep 1
-        ip addr show TEP10
+        # ip addr show TEP10
         # vxlan10 interface
         ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
         ip addr add 192.168.1.102/24 dev vxlan10
         ip link set vxlan10 up
-        ip addr show vxlan10
+        # ip addr show vxlan10
         ifconfig $CVL_INTF 1.1.1.2/24 up
         sleep 2
         # ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
@@ -174,7 +189,8 @@ elif [ "$MODE" = "VXLAN" ]; then
             echo "ip route change failed, attempting ip route add..."
             ip route add 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
         fi
-        ip addr show $CVL_INTF
+        # ip addr show $CVL_INTF
+        ip -br a
 LP_EOF
 else
     echo "Invalid MODE specified. Please use UNTAGGED or VXLAN."
