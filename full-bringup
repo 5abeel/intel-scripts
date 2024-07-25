@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This script runs all the steps in sequence
+# Review config.env before running for environment details
+
+# 1. Reboot IMC/ACC + setup LNP from target_copy folder
+./1-setup-imc-acc.sh
+
+echo "================= 1-setup-imc-acc.sh completed ============"
+# 2. Init ACC, start infrap4d, set-pipe and start IDPF driver on host
+./2-init-acc.sh
+
+echo "================= 2-init-acc.sh completed ================="
+
+# 3. Program p4 tables, run OVS and setup networking
+./3-auto.sh
+
+echo "================= 3-auto.sh completed ====================="

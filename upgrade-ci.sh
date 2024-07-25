@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_DIR=/root/sabeel
-BUILD_NUM=59692
+BUILD_NUM=59781
 MANIFEST_BRANCH=trunk
 CI_OR_OD=ci
 ARTIFACTORY_URL="https://ubit-artifactory-or.intel.com/artifactory/list/mountevans_sw_bsp-or-local/builds/official/mev-ts-${MANIFEST_BRANCH}/${CI_OR_OD}/mev-ts-${MANIFEST_BRANCH}-${CI_OR_OD}-${BUILD_NUM}"

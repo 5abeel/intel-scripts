@@ -250,6 +250,3 @@ p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
     "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
 
 
-
-
-
