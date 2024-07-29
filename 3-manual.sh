@@ -17,12 +17,15 @@
     |                                                       |---------------->PHY_PORT 0  <==============> LP ens801f0 = 192.168.1.102/24
     |-------------------------------------------------------------------------------|
 
+# On host
+nmcli device set ens801f0v0 managed no
+ip addr add dev ens801f0v0 192.168.1.101/24
 
+
+# On ACC
 HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
 ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
 
-nmcli device set "$HOST_VF_INTF" managed no
-ip addr add dev "$HOST_VF_INTF" 192.168.1.101/24
 
 
 echo "HOST_VF - ACC_PR1:"

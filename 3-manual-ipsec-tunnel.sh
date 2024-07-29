@@ -8,10 +8,10 @@ HOST_VF_INTF (ens801f0v0)----------PR------> ACC_PR1_INTF (enp0s1f0d4)----------
 192.168.1.102/24                                        |
                                                         |
                                                         |                           
-                                                  =====OVS======
-                                                    br-intrnl-----|
-                                                  ==============  |                 
-                                                        |         |---- ACC_PR2_INTF (enp0s1f0d5)-----PR----> PHY_PORT 0 ========== ens801f0
+                                                  =====OVS======================
+                                                    br-intrnl--------br-tunl--
+                                                  ======================|=======
+                                                        |               |---- ACC_PR2_INTF (enp0s1f0d5)-----PR----> PHY_PORT 0 ========== ens801f0
                                                         |                   VSI (0x0C)                                              192.168.1.102/24       
                                                         |                                                                                |
                                                         |                                                                                |--------------|              
@@ -50,7 +50,7 @@ p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi             "vmeta.co
 
 # For IPsec tunnel mode
 
-IPSEC_VF_INTF=ens801f0v1 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
+IPSEC_VF_INTF=ens801f0v2 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
 ACC_PR3_INTF=enp0s1f0d6 ; ACC_PR3_VSI=13 ; ACC_PR3_PORT=29
 
 echo "IPSEC_VF - ACC_PR1:"
@@ -154,6 +154,10 @@ ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \
     options:local_ip=10.1.1.1 options:remote_ip=10.1.1.2 options:key=10 options:dst_port=4789
 ifconfig br-intrnl up
 sleep 1
+
+# IPsec tunnel mode over VXLAN
+ovs-vsctl add-port br-intrnl enp0s1f0d6
+
 
 # Setup br-tunl
 # =============
