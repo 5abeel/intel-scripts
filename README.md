@@ -14,8 +14,8 @@ Simply replace Host IP in scripts to `localhost`.
 4. Review `full-bringup` and run script
 
 Alternative to #4, run each step independently
-4a. Run `./1-setup-imc-acc.sh`
-4b. Run `./2-init-acc.sh`
-4c. Run `./3-auto.sh` or `./3-auto-vxlan-ipsec-tunnel.sh` or run manual entry commands 
+* Run `./1-setup-imc-acc.sh`
+* Run `./2-init-acc.sh`
+* Run `./3-auto.sh` or `./3-auto-vxlan-ipsec-tunnel.sh` or run commands manually
 
 
