@@ -119,11 +119,11 @@ parse_mac_address_no_colons() {
 }
 
 # Get mac address details for rif mod_table programming
-read MAC_HOST_NO_COLONS MAC_START MAC_MID MAC_LAST TMP_DMACHIGH TMP_DMACLOW < <(parse_mac_address_no_colons "$MAC_HOST")
+read MAC_HOST_NO_COLONS MAC_START MAC_MID MAC_LAST TMP1 TMP2 < <(parse_mac_address_no_colons "$MAC_HOST")
 
-echo "DEBUG: MAC_HOST=$MAC_HOST"
-echo "DEBUG: MAC_HOST_NO_COLONS=$MAC_HOST_NO_COLONS"
-echo "DEBUG: MAC_START=$MAC_START, MAC_MID=$MAC_MID, MAC_LAST=$MAC_LAST"
+#echo "DEBUG: MAC_HOST=$MAC_HOST"
+#echo "DEBUG: MAC_HOST_NO_COLONS=$MAC_HOST_NO_COLONS"
+#echo "DEBUG: MAC_START=$MAC_START, MAC_MID=$MAC_MID, MAC_LAST=$MAC_LAST"
 
 if [ -z "$MAC_START" ] || [ -z "$MAC_MID" ] || [ -z "$MAC_LAST" ]; then
     echo "Error: MAC address parts are empty. rif mod table entry programming might fail"
@@ -131,10 +131,10 @@ fi
 
 # Get MAC address of vxlan10 interface from LP - for nexthop_table programming
 VXLAN10_MAC=$(ssh $SSH_OPTIONS "$LP" "ip link show vxlan10 | awk '/ether/ {print \$2}'")
-read VXLAN10_MAC_NO_COLONS TMP_START TMP_MID TMP_LAST DMAC_HIGH DMAC_LOW < <(parse_mac_address_no_colons "$VXLAN10_MAC")
+read VXLAN10_MAC_NO_COLONS TMP1 TMP2 TMP3 DMAC_HIGH DMAC_LOW < <(parse_mac_address_no_colons "$VXLAN10_MAC")
 
-echo "DEBUG: VXLAN10_MAC_NO_COLONS=$VXLAN10_MAC_NO_COLONS"
-echo "DEBUG: DMAC_HIGH=$DMAC_HIGH, DMAC_LOW=$DMAC_LOW"
+#echo "DEBUG: VXLAN10_MAC_NO_COLONS=$VXLAN10_MAC_NO_COLONS"
+#echo "DEBUG: DMAC_HIGH=$DMAC_HIGH, DMAC_LOW=$DMAC_LOW"
 
 if [ -z "$DMAC_HIGH" ] || [ -z "$DMAC_LOW" ]; then
     echo "Error: DMAC address parts are empty. nexthop_table entry programming might fail"
