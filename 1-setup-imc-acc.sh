@@ -74,6 +74,7 @@ if ssh $SSH_OPTIONS $IMC "
     grep -q 'sem_num_pages = 28' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'lem_num_pages = 32' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'mod_num_pages = 2' /etc/dpcp/cfg/default_cp_init.cfg &&
+    grep -q 'cxp_num_pages = 5' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'acc_apf = 16' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -q 'cpf_host = 4' /etc/dpcp/cfg/default_cp_init.cfg &&
     grep -qP 'comm_vports\s*=\s*\(\(\[5,0\],\[4,0\]\),\(\[0,3\],\[4,3\]\)\)' /etc/dpcp/cfg/default_cp_init.cfg
