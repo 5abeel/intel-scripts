@@ -3,9 +3,6 @@
 # Source the environment file
 source ./config.env
 
-# Timezone to set
-TIMEZONE="America/Los_Angeles"
-
 # Define the commands to execute
 COMMANDS=(
     "systemctl stop firewalld"
