@@ -5,7 +5,7 @@
 #    correctly on this hw with correct pcie_bdf number
 # 2. the es2k_skip_p4.conf file has all VSIs with correct MAC address added to
 #    VSI-Group 1
-# 3. LNW artifacts present in /usr/share/stratum/lnp folder
+# 3. LNW artifacts present in /opt/fxp-net_linux-networking folder
 
 # Source the environment file
 source ./config.env
@@ -90,13 +90,13 @@ check_switchd_status() {
 }
 
 set_pipe() {
-    if [ ! -f /usr/share/stratum/lnp/lnp.pb.bin ]; then
+    if [ ! -f /opt/fxp-net_linux-networking/lnp.pb.bin ]; then
         echo "lnp.pb.bin file not found...creating one"
-        touch /usr/share/stratum/lnp/ipu.bin
-        /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/usr/share/stratum/lnp/lnp.pb.bin
+        touch /opt/fxp-net_linux-networking/ipu.bin
+        /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/opt/fxp-net_linux-networking/lnp.pb.bin
     fi
     printf "Setting pipe..."
-    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /usr/share/stratum/lnp/lnp.pb.bin /usr/share/stratum/lnp/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /opt/fxp-net_linux-networking/lnp.pb.bin /opt/fxp-net_linux-networking/p4Info.txt
     printf "OK\n"
 }
 
