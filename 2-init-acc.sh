@@ -142,51 +142,39 @@ copy_ipsec_artifacts() {
 
 ### Step 1: cleanup acc + stop idpf driver on host
 
-# SSH to IMC first
-ssh $SSH_OPTIONS "$IMC" << EOF
-    # SSH to ACC from IMC
-    ssh $SSH_OPTIONS "$ACC" << REMOTE
-$(typeset -f cleanup_acc)
-
-cleanup_acc
-REMOTE
+ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
+    $(declare -f cleanup_acc)
+    cleanup_acc
 EOF
 
 ssh $SSH_OPTIONS -t "$HOST" << EOF
-    $(typeset -f stop_idpf)
+    $(declare -f stop_idpf)
     stop_idpf
 EOF
 
-
 ### Step 2: start infrap4d, set-pipe on ACC
+ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
+    $(declare -f check_for_first_run)
+    $(declare -f set_hugepages)
+    $(declare -f set_interface_ip)
+    $(declare -f start_infrap4d)
+    $(declare -f check_switchd_status)
+    $(declare -f set_pipe)
 
-# SSH to IMC first
-ssh $SSH_OPTIONS "$IMC" << EOF
-    # SSH to ACC from IMC
-    ssh $SSH_OPTIONS "$ACC" << REMOTE
-$(typeset -f check_for_first_run)
-$(typeset -f set_hugepages)
-$(typeset -f set_interface_ip)
-$(typeset -f start_infrap4d)
-$(typeset -f check_switchd_status)
-$(typeset -f set_pipe)
-
-check_for_first_run
-set_hugepages
-set_interface_ip
-start_infrap4d
-check_switchd_status
-set_pipe
-REMOTE
+    check_for_first_run
+    set_hugepages
+    set_interface_ip
+    start_infrap4d
+    check_switchd_status
+    set_pipe
 EOF
-
 
 ### Step 3: start IDPF driver on host + setup comms channel
 
 ssh $SSH_OPTIONS -t "$HOST" << EOF
-    $(typeset -f start_idpf)
-    $(typeset -f setup_host_comms_chnl)
-    $(typeset -f copy_ipsec_artifacts)
+    $(declare -f start_idpf)
+    $(declare -f setup_host_comms_chnl)
+    $(declare -f copy_ipsec_artifacts)
     start_idpf
     echo "Pausing 10s for all VFs to come up..."
     sleep 10
