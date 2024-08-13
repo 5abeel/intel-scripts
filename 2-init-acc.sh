@@ -14,6 +14,7 @@ cleanup_acc() {
     printf "Stopping infrap4d and ovs..."
     pkill infrap4d
     pkill ovs
+    rm -f /var/log/stratum/infrap4d.INFO # remove the symlink file to avoid false reads of switchd started successfully
 
     # TODO: cleanup networking interfaces, ovs-bridge, ports etc.
 
@@ -75,7 +76,7 @@ check_switchd_status() {
     max_retries=15
 
     while [ $retries -lt $max_retries ]; do
-        if tail -5 /var/log/stratum/infrap4d.INFO | grep -q "switchd started successfully"; then
+        if tail -5 /var/log/stratum/infrap4d.INFO 2>/dev/null | grep -q "switchd started successfully"; then
             printf "switchd started successfully\n"
             return 0
         else
