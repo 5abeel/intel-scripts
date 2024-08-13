@@ -128,6 +128,18 @@ setup_host_comms_chnl() {
     printf "OK\n"
 }
 
+copy_ipsec_artifacts() {
+    # IPsec-Recipe has hardcoded values which requires following files. Copy from ACC artifacts
+    # to following location
+    # /var/tmp/ipsec_fixed_func.pb.bin
+    # /var/tmp/linux_networking.p4info.txt
+    printf "Copying P4 artifacts from ACC to host (for ipsec-recipe)..."
+    rm -rf /var/tmp/ipsec_fixed_func.pb.bin
+    rm -rf /var/tmp/linux_networking.p4info.txt
+    scp $SSH_OPTIONS -pr root@10.10.0.2:/opt/fxp-net_linux-networking/lnp.pb.bin /var/tmp/ipsec_fixed_func.pb.bin
+    scp $SSH_OPTIONS -pr root@10.10.0.2:/opt/fxp-net_linux-networking/p4Info.txt /var/tmp/linux_networking.p4info.txt
+}
+
 ### Step 1: cleanup acc + stop idpf driver on host
 
 # SSH to IMC first
@@ -174,10 +186,12 @@ EOF
 ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(typeset -f start_idpf)
     $(typeset -f setup_host_comms_chnl)
+    $(typeset -f copy_ipsec_artifacts)
     start_idpf
     echo "Pausing 10s for all VFs to come up..."
     sleep 10
     setup_host_comms_chnl
+    copy_ipsec_artifacts
 EOF
 
 ### Step 4: Print host and ACC IDPF port data

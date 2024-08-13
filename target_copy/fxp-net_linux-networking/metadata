@@ -1,1 +1,4 @@
-lnp-arp-acc-always
+1.7 RC3
+dataplane-p4 snapshot 8ec0710a036e3eb0f4e2393a8fa400128c025f99 (lnp-arp-acc-always)
+artifacts generated with p4c-3.0.70.120
+
