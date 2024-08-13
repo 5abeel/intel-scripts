@@ -38,7 +38,7 @@ check_for_first_run() {
     if [ ! -d "/usr/share/stratum/certs" ]; then
         echo "Certs not found. Generating new certs..."
         cd /usr/share/stratum
-        COMMON_NAME=10.10.0.2 ./generate-certs.sh
+        COMMON_NAME=$GRPC_ADDR_IP ./generate-certs.sh
         cd -
     fi
 }
@@ -56,8 +56,8 @@ set_hugepages() {
 set_interface_ip() {
     printf "Setting interface IP..."
     nmcli device set enp0s1f0d3 managed no
-    if ! ip addr show dev enp0s1f0d3 | grep -q "10.10.0.2/24"; then
-        ip addr add 10.10.0.2/24 dev enp0s1f0d3
+    if ! ip addr show dev enp0s1f0d3 | grep -q "$GRPC_ADDR_IP"; then
+        ip addr add $GRPC_ADDR_IP/24 dev enp0s1f0d3
     else
         printf "IP already set. "
     fi
@@ -66,7 +66,7 @@ set_interface_ip() {
 
 start_infrap4d() {
     printf "Starting infrap4d..."
-    /opt/p4/p4-cp-nws/sbin/infrap4d --local_stratum_url="10.10.0.2:9559" --external_stratum_urls="10.10.0.2:9339,10.10.0.2:9559"
+    /opt/p4/p4-cp-nws/sbin/infrap4d --local_stratum_url="$GRPC_ADDR_IP:9559" --external_stratum_urls="$GRPC_ADDR_IP:9339,$GRPC_ADDR_IP:9559"
     printf "OK\n"
 }
 
@@ -96,7 +96,7 @@ set_pipe() {
         /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/opt/fxp-net_linux-networking/lnp.pb.bin
     fi
     printf "Setting pipe..."
-    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g 10.10.0.2:9559 set-pipe br0 /opt/fxp-net_linux-networking/lnp.pb.bin /opt/fxp-net_linux-networking/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g $GRPC_ADDR_IP:9559 set-pipe br0 /opt/fxp-net_linux-networking/lnp.pb.bin /opt/fxp-net_linux-networking/p4Info.txt
     printf "OK\n"
 }
 
@@ -112,19 +112,19 @@ start_idpf() {
 
 setup_host_comms_chnl() {
     printf "Setting up comms channel on host..."
-
+    echo "checking for $HOST_COMMS_IP"
     nmcli device set ens801f0d3 managed no
-    if ! ip addr show dev ens801f0d3 | grep -q "10.10.0.3/24"; then
-        ip addr add 10.10.0.3/24 dev ens801f0d3
+    if ! ip addr show dev ens801f0d3 | grep -q "$HOST_COMMS_IP"; then
+        ip addr add $HOST_COMMS_IP/24 dev ens801f0d3
     else
         printf "IP already set. "
     fi
 
     # Copy/overwrite certs on host from ACC (in case certs have changed)
     rm -rf /usr/share/stratum/certs
-    ssh-keygen -R 10.10.0.2
-    ssh-keyscan -t ecdsa 10.10.0.2 >> ~/.ssh/known_hosts
-    scp $SSH_OPTIONS -pr root@10.10.0.2:/usr/share/stratum/certs /usr/share/stratum
+    ssh-keygen -R $GRPC_ADDR_IP
+    ssh-keyscan -t ecdsa $GRPC_ADDR_IP >> ~/.ssh/known_hosts
+    scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/usr/share/stratum/certs /usr/share/stratum
     printf "OK\n"
 }
 
@@ -136,12 +136,11 @@ copy_ipsec_artifacts() {
     printf "Copying P4 artifacts from ACC to host (for ipsec-recipe)..."
     rm -rf /var/tmp/ipsec_fixed_func.pb.bin
     rm -rf /var/tmp/linux_networking.p4info.txt
-    scp $SSH_OPTIONS -pr root@10.10.0.2:/opt/fxp-net_linux-networking/lnp.pb.bin /var/tmp/ipsec_fixed_func.pb.bin
-    scp $SSH_OPTIONS -pr root@10.10.0.2:/opt/fxp-net_linux-networking/p4Info.txt /var/tmp/linux_networking.p4info.txt
+    scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/lnp.pb.bin /var/tmp/ipsec_fixed_func.pb.bin
+    scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/p4Info.txt /var/tmp/linux_networking.p4info.txt
 }
 
 ### Step 1: cleanup acc + stop idpf driver on host
-
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     $(declare -f cleanup_acc)
     cleanup_acc
@@ -161,6 +160,10 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     $(declare -f check_switchd_status)
     $(declare -f set_pipe)
 
+    # Export the IP addresses needed for configuration
+    export GRPC_ADDR_IP=$GRPC_ADDR_IP
+    export HOST_COMMS_IP=$HOST_COMMS_IP
+
     check_for_first_run
     set_hugepages
     set_interface_ip
@@ -170,11 +173,15 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
 EOF
 
 ### Step 3: start IDPF driver on host + setup comms channel
-
 ssh $SSH_OPTIONS -t "$HOST" << EOF
     $(declare -f start_idpf)
     $(declare -f setup_host_comms_chnl)
     $(declare -f copy_ipsec_artifacts)
+
+    # Export the IP addresses needed for configuration
+    export GRPC_ADDR_IP=$GRPC_ADDR_IP
+    export HOST_COMMS_IP=$HOST_COMMS_IP
+
     start_idpf
     echo "Pausing 10s for all VFs to come up..."
     sleep 10
@@ -183,5 +190,4 @@ ssh $SSH_OPTIONS -t "$HOST" << EOF
 EOF
 
 ### Step 4: Print host and ACC IDPF port data
-
 ./getvports.sh
