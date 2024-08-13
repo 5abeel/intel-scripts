@@ -26,19 +26,25 @@ if [ "$MODE" = "UNTAGGED" ]; then
 LP_EOF
 elif [ "$MODE" = "VXLAN" ]; then
     ssh $SSH_OPTIONS "$LP" << LP_EOF
+        echo "Removing old VXLAN interface config from LP..."
+        ip addr del 10.1.1.2/24 dev TEP10 &>/dev/null
+        ip addr del 192.168.1.102/24 dev vxlan10 &>/dev/null
+        ip addr del 1.1.1.2/24 dev ens801f0 &>/dev/null
+        ip link del vxlan10 &>/dev/null
+        ip link del TEP10 &>/dev/null
+        ip link del IPSECAPP &>/dev/null
+
         echo "Configuring LP interface for VXLAN mode..."
         ip link add dev TEP10 type dummy
         ifconfig TEP10 10.1.1.2/24 up
         sleep 1
-        # ip addr show TEP10
         # vxlan10 interface
         ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
         ip addr add 192.168.1.102/24 dev vxlan10
         ip link set vxlan10 up
-        # ip addr show vxlan10
         ifconfig $CVL_INTF 1.1.1.2/24 up
+        ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
         sleep 2
-        # ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
         # Attempt 'ip route change', if it fails, try 'ip route add'
         if ! ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF; then
             echo "ip route change failed, attempting ip route add..."
@@ -48,7 +54,7 @@ elif [ "$MODE" = "VXLAN" ]; then
         # VXLAN + IPsec tunnel mode
         ip link add dev IPSECAPP type dummy
         ifconfig IPSECAPP 11.0.0.2/24 up
-        sleep 1
+        sleep 3
         # Attempt 'ip route change', if it fails, try 'ip route add'
         if ! ip route change 11.0.0.0/24 dev vxlan10; then
             echo "ip route change failed, attempting ip route add..."

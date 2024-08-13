@@ -206,6 +206,7 @@ ip addr del 192.168.1.102/24 dev vxlan10
 ip addr del 1.1.1.2/24 dev ens801f0
 ip link del vxlan10
 ip link del TEP10
+ip link del IPSECAPP
 
 
 # IPsec (manual config)
