@@ -85,6 +85,9 @@ read VSI_HOST MAC_HOST VSI_IPSEC_APP MAC_IPSEC_APP < <(ssh $SSH_OPTIONS "$HOST" 
     ip addr add $IPSEC_APP_HOST_IP dev $IPSEC_VF_INTF
     ip link set $IPSEC_VF_INTF up
 
+    # For VXLAN + IPsec tunnel mode, we need $IPSEC_VF_INTF to have 1400 MTUs
+    ip link set dev $IPSEC_VF_INTF mtu 1400
+
     # Function to retrieve the MAC address and second byte
     $(declare -f get_mac_address)
     $(declare -f get_second_byte)
@@ -283,7 +286,7 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
         ovs-vsctl add-br br-intrnl
         ovs-vsctl add-port br-intrnl $ACC_PR1_INTF
         ovs-vsctl add-port br-intrnl $ACC_PR3_INTF
-        ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \\
+        ovs-vsctl add-port br-intrnl vxlan10 -- set interface vxlan10 type=vxlan \\
         options:local_ip=10.1.1.1 options:remote_ip=10.1.1.2 options:key=10 options:dst_port=4789
         ifconfig br-intrnl up
         sleep 1
