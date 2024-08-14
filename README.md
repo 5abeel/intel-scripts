@@ -24,7 +24,7 @@ Alternative to #4, run each step independently
     - Stops running infrap4d/ovs processes on ACC, and stops IDPF on host
     - Generates certs (if not present)
     - Starts infrap4d and waits for switchd to come up
-    - Sets-pipe
+    - Sets forwarding pipeline
     - Starts IDPF driver on host
     - Configures host interface for comms channel & copies certs to host
     - Prints all VF ports for review
