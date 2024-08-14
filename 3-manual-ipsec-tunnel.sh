@@ -223,6 +223,12 @@ ifconfig IPSECAPP 11.0.0.2/24 up
 ip route change 11.0.0.0/24 dev vxlan10 # if this fails, use 'ip route add' instead
 
 
+
+# For VXLAN + IPsec tunnel mode --> need to set IPSECAPP interface to lower MTU size
+# On host
+ip link set dev IPSECAPP mtu 1400
+
+
 # Cleanup LP
 # ==========
 
@@ -234,6 +240,113 @@ ip link del TEP10
 ip link del IPSECAPP
 
 
+### strongSwan config ###
+# ===================== #
+
+# On host -> clone and compile https://github.com/ipdk-io/ipsec-recipe
+# On LP -> clone and compile standard strongSwan 5.9.3
+
+# 1. Use same ipsec.secrets file contents on both host and LP side
+    [root@P8 etc]# cat ipsec.secrets
+    # ipsec.secrets - strongSwan IPsec secrets file
+    : PSK "example"
+    [root@P8 etc]#
+
+
+# 2. ipsec.conf file examples
+
+# 2a. Host side
+    [root@P7 etc]# cat ipsec.conf
+    # ipsec.conf - strongSwan IPsec configuration file
+
+    config setup
+            charondebug="ike 4, knl 4, cfg 2,enc 4,dmn 2, mgr 2"    #useful debugs
+
+
+    conn sts-base
+        fragmentation=yes
+        keyingtries=%forever
+        ike=aes256-sha1-modp1024,3des-sha1-modp1024!
+        esp=aes256gcm128
+        leftauth=psk
+        rightauth=psk
+        keyexchange=ikev2
+        left=192.168.1.101
+        right=192.168.1.102
+        leftid=192.168.1.101
+        rightid=192.168.1.102
+        leftsubnet=11.0.0.1
+        rightsubnet=11.0.0.2
+    #    replay_window=32
+    #    lifetime=1
+    #    margintime=30m
+    #    rekey=yes
+        lifebytes=100000000000
+        marginbytes=6000000000
+        rekey=no
+        type=tunnel
+        leftprotoport=tcp
+        rightprotoport=tcp
+        auto=start
+    [root@P7 etc]#
+
+# 2b. client side
+    [root@P8 etc]# cat ipsec.conf
+    # ipsec.conf - strongSwan IPsec configuration file
+    # basic configuration - pre-shared key(psk) and ikev2
+
+    config setup
+            charondebug="ike 4, knl 4, cfg 2,enc 4,dmn 2, mgr 2"    #useful debugs
+
+
+    conn sts-base
+        fragmentation=yes
+        keyingtries=%forever
+        ike=aes256-sha1-modp1024,3des-sha1-modp1024!
+        esp=aes256gcm128
+        leftauth=psk
+        rightauth=psk
+        keyexchange=ikev2
+        left=192.168.1.102
+        right=192.168.1.101
+        leftid=192.168.1.102
+        rightid=192.168.1.101
+        leftsubnet=11.0.0.2
+        rightsubnet=11.0.0.1
+    #    replay_window=32
+    #    lifetime=1
+    #    margintime=30m
+    #    rekey=yes
+        lifebytes=100000000000
+        marginbytes=6000000000
+        rekey=no
+        type=tunnel
+        leftprotoport=tcp
+        rightprotoport=tcp
+        auto=add
+
+    [root@P8 etc]#
+
+# 3. Set no_proxy on host to avoid traffic interruption
+
+export no_proxy=intel.com,.intel.com,localhost,127.0.0.1,10.166.0.0/20,10.96.0.0/12,192.168.0.1/24,10.10.0.2/24
+export NO_PROXY=intel.com,.intel.com,localhost,127.0.0.1,10.166.0.0/20,10.96.0.0/12,192.168.0.1/24,10.10.0.2/24
+unset http_proxy
+unset https_proxy
+unset ftp_proxy IPROXY FTP_PROXY HTTP_PROXY HTTPS_PROXY SOCKS_PROXY socks_proxy rsync_proxy
+
+
+# 4. Start strongSwan - first on LP side, then on host
+
+# On LP
+ipsec start
+
+# On host
+./ipsec start
+
+# check that SAs establish using 'ipsec statusall' command
+
+################ OLD ###########################################
 # IPsec (manual config)
 #======================
 
