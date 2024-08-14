@@ -8,16 +8,17 @@ HOST_VF_INTF (ens801f0v0)----------PR------> ACC_PR1_INTF (enp0s1f0d4)----------
 192.168.1.102/24                                        |
                                                         |
                                                         |                           
-                                                  =====OVS======================
-                                                    br-intrnl--------br-tunl--
-                                                  ======================|=======
-                                                        |               |---- ACC_PR2_INTF (enp0s1f0d5)-----PR----> PHY_PORT 0 ========== ens801f0
-                                                        |                   VSI (0x0C)                                              192.168.1.102/24       
-                                                        |                                                                                |
-                                                        |                                                                                |--------------|              
-IPSEC_VF_INTF (ens801f0v1)---------PR-------> ACC_PR3_INTF (enp0s1f0d6)                                                                                 |
-    VSI (0x1D)                                      VSI (0x0D)                                                                                      IPSECAPP (type dummy)
-   11.0.0.1/24                                                                                                                                          11.0.0.2
+                                                  ================OVS================
+                                                    br-intrnl-------------br-tunl--
+                                                (TEP/vxlan 10.1.1.1)    (1.1.1.1)
+                                                  =========================|=========
+                                                        |                  |---- ACC_PR2_INTF -----PR----> PHY_PORT 0 ====================== ens801f0         TEP10             vxlan10
+                                                        |                        (enp0s1f0d5)                                               1.1.1.2 --------- 10.1.1.2 ----- 192.168.1.102
+                                                        |                          (0x0C)                                                                                       |
+                                                        |                                                                                                                       |
+IPSEC_VF_INTF (ens801f0v2)---------PR-------> ACC_PR3_INTF (enp0s1f0d6)                                                                                                         |
+    VSI (0x1E)                                      VSI (0x0D)                                                                                                          IPSECAPP (type dummy)
+   11.0.0.1/24                                                                                                                                                              11.0.0.2
 
 
 
@@ -48,6 +49,18 @@ p4rt-ctl add-entry br0 linux_networking_control.rx_phy_port_to_pr_map  "vmeta.co
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map  "user_meta.cmeta.source_port=${PHY_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR2_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi             "vmeta.common.vsi=${ACC_PR2_VSI},zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(${PHY_PORT})"
 
+p4rt-ctl add-entry br0 linux_networking_control.ipv4_lpm_root_lut "user_meta.cmeta.bit16_zeros=4/65535,priority=2048,action=linux_networking_control.ipv4_lpm_root_lut_action(0)"
+ 
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=0/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=1/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=2/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=3/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=4/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=5/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=6/7,priority=1,action=linux_networking_control.bypass"
+p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=7/7,priority=1,action=linux_networking_control.bypass"
+
+
 # For IPsec tunnel mode
 
 IPSEC_VF_INTF=ens801f0v2 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
@@ -64,17 +77,30 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${IPSEC_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR3_PORT})"
 
 
-p4rt-ctl add-entry br0 linux_networking_control.ipv4_lpm_root_lut "user_meta.cmeta.bit16_zeros=4/65535,priority=2048,action=linux_networking_control.ipv4_lpm_root_lut_action(0)"
- 
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=0/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=1/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=2/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=3/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=4/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=5/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=6/7,priority=1,action=linux_networking_control.bypass"
-p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.lag_group_id=0/255,hash=7/7,priority=1,action=linux_networking_control.bypass"
+# Add routing interface and add to nextop table
 
+# HOST_VF_INTF : ens801f0v0 : 00:1c:00:00:03:14 <-- 192.168.1.101 MAC address
+ 
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_start \
+    "rif_mod_map_id0=0x0005,action=linux_networking_control.set_src_mac_start(arg=0x001c)"
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_mid \
+    "rif_mod_map_id1=0x0005,action=linux_networking_control.set_src_mac_mid(arg=0x0000)"
+p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_last \
+    "rif_mod_map_id2=0x0005,action=linux_networking_control.set_src_mac_last(arg=0x0314)"
+ 
+# table nexthop_table - Add router interface (0x05)
+ 
+# CVL_HOST - nexthop - use LP's 192.168.1.102 interface MAC address
+# if running non-vxlan, this will be the ens801f0 (phy) mac address. if using vxlan tunneling, this should be the vxlan10 MAC address
+# ens801f0         UP             6c:fe:54:47:44:70 <-- LP MAC 192.168.1.102                                                               
+# vxlan10          UP             ee:35:eb:f9:2f:2b <-- LP vxlan10 MAC address for 192.168.1.102
+p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
+    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0xee35,dmac_low=0xebf92f2b)"
+ 
+# Add to ipv4_table <-- entry for IPsec tunnel routing lookup
+# dst_match=0xc0a80166 = 192.168.1.102
+p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
+    "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
 
 
 export RUN_OVS=/opt/p4/p4-cp-nws
@@ -145,19 +171,15 @@ ovs-vsctl show
 ip addr del dev ens801f0 192.168.1.102/24
 
 
-
 # Setup br-intrnl
 # ===============
 ovs-vsctl add-br br-intrnl
 ovs-vsctl add-port br-intrnl enp0s1f0d4
+ovs-vsctl add-port br-intrnl enp0s1f0d6
 ovs-vsctl add-port br-intrnl vxlan1 -- set interface vxlan1 type=vxlan \
     options:local_ip=10.1.1.1 options:remote_ip=10.1.1.2 options:key=10 options:dst_port=4789
 ifconfig br-intrnl up
 sleep 1
-
-# IPsec tunnel mode over VXLAN
-ovs-vsctl add-port br-intrnl enp0s1f0d6
-
 
 # Setup br-tunl
 # =============
@@ -184,18 +206,21 @@ CVL_INTF=ens801f0
 ip link add dev TEP10 type dummy
 ifconfig TEP10 10.1.1.2/24 up
 sleep 1
-ip addr show TEP10
 
 # vxlan10 interface
 ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
 ip addr add 192.168.1.102/24 dev vxlan10
 ip link set vxlan10 up
-ip addr show vxlan10
 
 ifconfig ${CVL_INTF} 1.1.1.2/24 up
 sleep 2
 ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
-ip addr show ${CVL_INTF}
+ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
+ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF # if this fails, use 'ip route add' instead
+
+ip link add dev IPSECAPP type dummy
+ifconfig IPSECAPP 11.0.0.2/24 up
+ip route change 11.0.0.0/24 dev vxlan10 # if this fails, use 'ip route add' instead
 
 
 # Cleanup LP
@@ -229,29 +254,5 @@ devmem 0x2024D02400 32 0x80000000
 devmem 0x2024E02000 32 0x4830000
 devmem 0x2024E02400 32 0x80000000
 
-
-
-# Add routing interface and add to nextop table
-
-# HOST_VF_INTF
-# ens801f0v0 : 00:1c:00:00:03:14 <-- 192.168.1.101 MAC address
- 
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_start \
-    "rif_mod_map_id0=0x0005,action=linux_networking_control.set_src_mac_start(arg=0x001c)"
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_mid \
-    "rif_mod_map_id1=0x0005,action=linux_networking_control.set_src_mac_mid(arg=0x0000)"
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_last \
-    "rif_mod_map_id2=0x0005,action=linux_networking_control.set_src_mac_last(arg=0x0314)"
- 
-# table nexthop_table - Add router interface (0x05)
- 
-# CVL_HOST - nexthop - use LP's phy0 interface MAC address
-# ens801f0         UP             6c:fe:54:47:44:70 <-- LP IPSEC tunnel MAC 192.168.1.102                                                               ee:35:eb:f9:2f:2b
-p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
-    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0xee35,dmac_low=0xebf92f2b)"
- 
-# Add to ipv4_table <-- entry for IPsec tunnel routing lookup
-p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
-    "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
 
 
