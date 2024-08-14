@@ -85,7 +85,7 @@ read VSI_HOST MAC_HOST VSI_IPSEC_APP MAC_IPSEC_APP < <(ssh $SSH_OPTIONS "$HOST" 
     ip addr add $IPSEC_APP_HOST_IP dev $IPSEC_VF_INTF
     ip link set $IPSEC_VF_INTF up
 
-    # For VXLAN + IPsec tunnel mode, we need $IPSEC_VF_INTF to have 1400 MTUs
+    # For VXLAN + IPsec tunnel mode, we need $IPSEC_VF_INTF to have 1400 MTU
     ip link set dev $IPSEC_VF_INTF mtu 1400
 
     # Function to retrieve the MAC address and second byte
