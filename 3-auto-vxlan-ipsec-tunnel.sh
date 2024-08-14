@@ -268,7 +268,7 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     ovs-vsctl --no-wait init
     mkdir -p /tmp/logs
     ovs-vswitchd --pidfile --detach --mlockall \\
-    --log-file=/tmp/logs/ovs-vswitchd.log --grpc-addr="10.10.0.2"
+    --log-file=/tmp/logs/ovs-vswitchd.log --grpc-addr="$GRPC_ADDR_IP"
     ovs-vsctl set Open_vSwitch . other_config:n-revalidator-threads=1
     ovs-vsctl set Open_vSwitch . other_config:n-handler-threads=1
     
