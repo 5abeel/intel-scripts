@@ -1,10 +1,10 @@
 {
     "program_name": "fxp-net_linux-networking",
-    "build_date": "Tue Aug 13 12:28:35 2024",
-    "compile_command": "/usr/bin/p4c-pna-xxp -I /usr/share/p4c/p4c_src/../idpf-lib --no-pedantic --ptype-autogen off --context ./fxp-net_linux-networking/context.json --tdi ./fxp-net_linux-networking/tdi.json -I /usr/share/p4c/p4include -I /usr/lib -I /usr/share/p4c/p4include/idpf -I $/usr/share/p4c/idpf-lib --p4v=16 --p4runtime-files ./fxp-net_linux-networking/p4Info.txt --pkg-name lnpvg_ipsec_11 --pkg-version 3.01.24.4 -o fxp-net_linux-networking/fxp-net_linux-networking_8954755209c948b7a314362d049b63ef.s fxp-net_linux-networking.p4",
-    "compiler_version": "3.0.70.120",
+    "build_date": "Wed Sep 11 06:02:47 2024",
+    "compile_command": "/usr/local/bin/p4c-pna-xxp -I /usr/local/share/p4c/p4c_src/../idpf-lib --Wdisable --auto-alloc-objid=on --no-pedantic --context ./artifacts/fxp-net_linux-networking/context.json --tdi ./artifacts/fxp-net_linux-networking/tdi.json --p4runtime-entries-files ./artifacts/fxp-net_linux-networking/entries.json -I /usr/local/share/p4c/p4include -I /usr/local/bin/../lib -I /usr/local/bin/../share/p4c/p4include/idpf -I /usr/local/bin/../share/p4c/p4include -I /usr/local/bin/../share/p4c/idpf-lib --p4v=16 --p4runtime-files ./artifacts/fxp-net_linux-networking/p4Info.txt --pkg-name Sample P4 Program pkg --pkg-version 1.0.73.35 -o artifacts/fxp-net_linux-networking/fxp-net_linux-networking_8dabb03cf9594026be3d0021b6b5d475.s /sdk/build/p4-programs/fxp-net-scenarios/fxp-net_linux-networking/fxp-net_linux-networking.p4",
+    "compiler_version": "3.0.70.124",
     "schema_version": "1.0.0",
-    "run_id": "124813122434",
+    "run_id": "12491155832",
     "target": "MEV",
     "global_configs": {
         "hardware_blocks": [
@@ -21,10 +21,6 @@
                     {
                         "hash_space_id": 0,
                         "base_address": 0
-                    },
-                    {
-                        "hash_space_id": 1,
-                        "base_address": 147456
                     }
                 ]
             },
@@ -33,10 +29,6 @@
                 "hash_space_cfg": [
                     {
                         "hash_space_id": 0,
-                        "base_address": 0
-                    },
-                    {
-                        "hash_space_id": 1,
                         "base_address": 0
                     }
                 ]
@@ -52,18 +44,23 @@
                 "name": "SEM",
                 "obj_cache": [
                     {
+                        "object_id": 2,
+                        "base_address": 2605056,
+                        "entry_size": 32
+                    },
+                    {
                         "object_id": 0,
                         "base_address": 0,
+                        "entry_size": 64
+                    },
+                    {
+                        "object_id": 3,
+                        "base_address": 3907584,
                         "entry_size": 32
                     },
                     {
                         "object_id": 1,
-                        "base_address": 10424320,
-                        "entry_size": 64
-                    },
-                    {
-                        "object_id": 2,
-                        "base_address": 31272960,
+                        "base_address": 1302528,
                         "entry_size": 64
                     }
                 ]
@@ -103,7 +100,7 @@
                         "profile": [
                             0
                         ],
-                        "hash_size": 12,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "NoAction",
@@ -147,7 +144,7 @@
                         "profile": [
                             1
                         ],
-                        "hash_size": 12,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "NoAction",
@@ -256,7 +253,7 @@
                         "profile": [
                             10
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "MainControlDecrypt.ipsec_decrypt",
@@ -763,8 +760,8 @@
                             16
                         ],
                         "sub_profile": 1,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.do_trap_enable",
@@ -887,8 +884,8 @@
                             15
                         ],
                         "sub_profile": 1,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.do_recirculate",
@@ -5652,8 +5649,8 @@
                             1
                         ],
                         "sub_profile": 1,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_vxlan_decap_outer_hdr",
@@ -5988,8 +5985,8 @@
                             2
                         ],
                         "sub_profile": 2,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 0,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_vxlan_decap_outer_hdr",
@@ -6251,7 +6248,7 @@
                         "profile": [
                             1
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.l2_fwd",
@@ -6709,7 +6706,7 @@
                         "profile": [
                             4
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.l2_fwd",
@@ -7663,8 +7660,8 @@
                             14
                         ],
                         "sub_profile": 0,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 0,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_nexthop_info_dmac",
@@ -8577,8 +8574,8 @@
                             5
                         ],
                         "sub_profile": 0,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.fwd_to_vsi",
@@ -9258,8 +9255,8 @@
                             3
                         ],
                         "sub_profile": 0,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_source_port",
@@ -9409,8 +9406,8 @@
                             1
                         ],
                         "sub_profile": 0,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 3,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_source_port",
@@ -9560,8 +9557,8 @@
                             2
                         ],
                         "sub_profile": 0,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 1,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_source_port",
@@ -9863,7 +9860,7 @@
                         "profile": [
                             9
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "NoAction",
@@ -9984,7 +9981,7 @@
                 }
             ],
             "default_action_handle": 29238102,
-            "max_default_actions": 4,
+            "max_default_actions": 2,
             "actions": [
                 {
                     "name": "linux_networking_control.l2_fwd_and_bypass_bridge",
@@ -10021,7 +10018,7 @@
                         ],
                         "sub_profile": 0,
                         "obj_id": 2,
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.l2_fwd_and_bypass_bridge",
@@ -10312,8 +10309,8 @@
                             8
                         ],
                         "sub_profile": 0,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 0,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_tunnel_v4",
@@ -10521,8 +10518,8 @@
                             9
                         ],
                         "sub_profile": 0,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 0,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_tunnel_v6",
@@ -10805,8 +10802,8 @@
                             11
                         ],
                         "sub_profile": 0,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.fwd_to_vsi",
@@ -10919,7 +10916,7 @@
                 }
             ],
             "default_action_handle": 29238102,
-            "max_default_actions": 4,
+            "max_default_actions": 2,
             "actions": [
                 {
                     "name": "linux_networking_control.fwd_to_vsi",
@@ -10955,8 +10952,8 @@
                             6
                         ],
                         "sub_profile": 0,
-                        "obj_id": 1,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.fwd_to_vsi",
@@ -11105,8 +11102,8 @@
                             4
                         ],
                         "sub_profile": 0,
-                        "obj_id": 0,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.fwd_to_vsi",
@@ -11499,22 +11496,6 @@
                     "bit_width": 48,
                     "index": 1,
                     "position": 6
-                }
-            ],
-            "match_key_format": [
-                {
-                    "match_key_handle": 0,
-                    "byte_order": "NETWORK",
-                    "byte_array_index": 0,
-                    "start_bit_offset": 0,
-                    "bit_width": 48
-                },
-                {
-                    "match_key_handle": 1,
-                    "byte_order": "NETWORK",
-                    "byte_array_index": 6,
-                    "start_bit_offset": 0,
-                    "bit_width": 48
                 }
             ],
             "default_action_handle": 21257015,
@@ -11911,7 +11892,7 @@
                         "profile": [
                             11
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.set_ipsec_tunnel",
@@ -12051,7 +12032,7 @@
                         "profile": [
                             10
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.ipsec_protect_set_metadata",
@@ -12320,8 +12301,8 @@
                             14
                         ],
                         "sub_profile": 2,
-                        "obj_id": 2,
-                        "hash_size": 325632,
+                        "obj_id": 1,
+                        "hash_size": 20352,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.tx_ipsec_transport",
@@ -12957,7 +12938,7 @@
                 }
             ],
             "default_action_handle": 33275382,
-            "max_default_actions": 4,
+            "max_default_actions": 2,
             "actions": [
                 {
                     "name": "linux_networking_control.decap_ipsec_tunnel_hdr",
@@ -12988,8 +12969,8 @@
                             13
                         ],
                         "sub_profile": 0,
-                        "obj_id": 1,
-                        "hash_size": 325632,
+                        "obj_id": 2,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.decap_ipsec_tunnel_hdr",
@@ -13127,7 +13108,7 @@
                         "profile": [
                             7
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.vm_src_ip4_mac_map_action",
@@ -13294,7 +13275,7 @@
                         "profile": [
                             8
                         ],
-                        "hash_size": 325632,
+                        "hash_size": 40704,
                         "action_format": [
                             {
                                 "action_name": "linux_networking_control.vm_dst_ip4_mac_map_action",

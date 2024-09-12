@@ -1,7 +1,7 @@
-/* p4c-pna-xxp version: 3.0.70.120 */ 
+/* p4c-pna-xxp version: 3.0.70.124 */ 
 
-name "lnpvg_ipsec_11";
-version 3.01.24.4;
+name "Sample P4 Program pkg";
+version 1.0.73.35;
 
 segment IDPF_FXP {
     label REG 0 PMD_COMMON;
@@ -131,8 +131,8 @@ segment IDPF_CXP {
 
 segment IDPF_CXP {
 
-    name "lnpvg_ipsec_11";
-    version 3.01.24.4;
+    name "Sample P4 Program pkg";
+    version 1.0.73.35;
     label PROTOCOL_ID 255 PROTO_ID_INVALID;
     label PROTOCOL_ID 1 MAC_IN0;
     label PROTOCOL_ID 2 MAC_IN1;
@@ -206,6 +206,7 @@ block PARSER {
     set %PROTO_STACK_SIZE 28;
 
 	tcam PTYPE(%ERROR, %MARKER1, %MARKER0, %NODEID, %STATE[79:70]) {
+		'b0, 'b1, 'b0, 8, 'b??_0000_0000 : PTYPE(4), LEMPROF(0);
 		'b0, 'b0, 'b0, 8, 'b??_0000_0000 : PTYPE(CXP_PTYPE_PAY), LEMPROF(1);
 		'b0, 'b0, 'b1, 7, 'b??_0000_0000 : PTYPE(CXP_PTYPE_IPV4_ESP), LEMPROF(10);
 		'b0, 'b1, 'b1, 7, 'b??_0000_0000 : PTYPE(CXP_PTYPE_TUN_IPV4_ESP), LEMPROF(10);
@@ -602,12 +603,12 @@ block PARSER {
 block LEM {
     table PROFILE_CFG(%PROFILE) {
 		0 : 
-			HASH_SIZE0(1), 
-			HASH_SIZE1(1), 
-			HASH_SIZE2(1), 
-			HASH_SIZE3(1), 
-			HASH_SIZE4(1), 
-			HASH_SIZE5(1), 
+			HASH_SIZE0(14), 
+			HASH_SIZE1(11), 
+			HASH_SIZE2(10), 
+			HASH_SIZE3(9), 
+			HASH_SIZE4(8), 
+			HASH_SIZE5(7), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(0), 
 			LUT {
@@ -615,12 +616,12 @@ block LEM {
 				OBJECT_ID(0)
 			};
 		1 : 
-			HASH_SIZE0(1), 
-			HASH_SIZE1(1), 
-			HASH_SIZE2(1), 
-			HASH_SIZE3(1), 
-			HASH_SIZE4(1), 
-			HASH_SIZE5(1), 
+			HASH_SIZE0(14), 
+			HASH_SIZE1(11), 
+			HASH_SIZE2(10), 
+			HASH_SIZE3(9), 
+			HASH_SIZE4(8), 
+			HASH_SIZE5(7), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(1), 
 			LUT {
@@ -628,12 +629,12 @@ block LEM {
 				OBJECT_ID(0)
 			};
 		10 : 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(14), 
+			HASH_SIZE1(11), 
+			HASH_SIZE2(10), 
+			HASH_SIZE3(9), 
+			HASH_SIZE4(8), 
+			HASH_SIZE5(7), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(10), 
 			LUT {
@@ -655,8 +656,6 @@ block LEM {
     table HASH_SPACE_CFG(%HASH_SPACE_ID) {
 		0 : 
 			BASE('h0);
-		1 : 
-			BASE('h24000);
 
     }
     table HASH_SPACE_MAP(%OBJECT_ID) {
@@ -689,11 +688,11 @@ block ICE_MISC {
 segment IDPF_FXP {
 
     domain 0 {
-        name "lnpvg_ipsec_11";
+        name "Sample P4 Program pkg";
     }
     domain 0 {
-        version 3.01.24.4;
-        external_version 0 3.01.24.4;
+        version 1.0.73.35;
+        external_version 0 1.0.73.35;
     }
     label PROTOCOL_ID 255 PROTO_ID_INVALID;
     label PROTOCOL_ID 1 MAC_IN0;
@@ -927,6 +926,13 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 1, 'b??00_0000_0000 : PTYPE(29),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b0, 'b0, 'b0, 'b0, 'b0, 'b0, 'b0, 'b0, 1, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_ARP),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
@@ -942,6 +948,20 @@ block PARSER {
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
 		'b0, 'b0, 'b0, 'b0, 'b1, 'b0, 'b0, 'b0, 'b0, 4, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV6_PAY),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b0, 'b0, 'b0, 'b1, 'b0, 4, 'b??00_0000_0000 : PTYPE(17),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b0, 'b0, 'b0, 'b0, 4, 'b??00_0000_0000 : PTYPE(18),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
 			L3_IN2_CSUM(ENABLE),
@@ -1025,6 +1045,27 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 4, 'b??00_0000_0000 : PTYPE(19),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 4, 'b??00_0000_0000 : PTYPE(20),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b0, 4, 'b??00_0000_0000 : PTYPE(21),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 4, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_TUN_MAC_IPV4_IPV4_PAY),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
@@ -1032,7 +1073,35 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b1, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 4, 'b??00_0000_0000 : PTYPE(22),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 4, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_GENEVE_MAC_IPV4_IPV4_PAY),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 4, 'b??00_0000_0000 : PTYPE(25),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b0, 4, 'b??00_0000_0000 : PTYPE(27),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b1, 'b0, 'b0, 'b0, 'b0, 4, 'b??00_0000_0000 : PTYPE(28),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
 			L3_IN2_CSUM(ENABLE),
@@ -1151,6 +1220,27 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 2, 'b??00_0000_0000 : PTYPE(9),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 2, 'b??00_0000_0000 : PTYPE(10),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b0, 2, 'b??00_0000_0000 : PTYPE(12),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 2, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_TUN_MAC_IPV4_IPV4_TCP),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
@@ -1158,7 +1248,35 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b1, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 2, 'b??00_0000_0000 : PTYPE(13),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 2, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_GENEVE_MAC_IPV4_IPV4_TCP),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 2, 'b??00_0000_0000 : PTYPE(14),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b0, 2, 'b??00_0000_0000 : PTYPE(15),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b1, 'b0, 'b0, 'b0, 'b0, 2, 'b??00_0000_0000 : PTYPE(16),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
 			L3_IN2_CSUM(ENABLE),
@@ -1207,6 +1325,27 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 3, 'b??00_0000_0000 : PTYPE(2),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 3, 'b??00_0000_0000 : PTYPE(3),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b0, 3, 'b??00_0000_0000 : PTYPE(4),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 3, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_TUN_MAC_IPV4_IPV4_UDP),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
@@ -1214,7 +1353,21 @@ block PARSER {
 			L4_IN0_ASSOC(0),
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
+		'b0, 'b0, 'b1, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 3, 'b??00_0000_0000 : PTYPE(5),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
 		'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b1, 'b1, 'b1, 3, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV4_GENEVE_MAC_IPV4_IPV4_UDP),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b0, 'b1, 'b1, 'b1, 'b0, 'b1, 3, 'b??00_0000_0000 : PTYPE(6),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
 			L3_IN2_CSUM(ENABLE),
@@ -1264,6 +1417,20 @@ block PARSER {
 			L4_IN1_ASSOC(1),
 			L4_IN2_ASSOC(2);
 		'b0, 'b1, 'b0, 'b0, 'b1, 'b0, 'b1, 'b0, 'b1, 3, 'b??00_0000_0000 : PTYPE(PTYPE_MAC_IPV6_GENEVE_MAC_IPV4_UDP),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b0, 'b0, 'b0, 'b1, 'b0, 3, 'b??00_0000_0000 : PTYPE(7),
+			L3_IN0_CSUM(ENABLE),
+			L3_IN1_CSUM(ENABLE),
+			L3_IN2_CSUM(ENABLE),
+			L4_IN0_ASSOC(0),
+			L4_IN1_ASSOC(1),
+			L4_IN2_ASSOC(2);
+		'b0, 'b1, 'b0, 'b1, 'b1, 'b0, 'b0, 'b0, 'b0, 3, 'b??00_0000_0000 : PTYPE(8),
 			L3_IN0_CSUM(ENABLE),
 			L3_IN1_CSUM(ENABLE),
 			L3_IN2_CSUM(ENABLE),
@@ -2871,20 +3038,21 @@ block SEM {
 
     table OBJECT_CACHE_CFG(%OBJECT_ID) {
 
-        0 : BASE(0), ENTRY_SIZE(32), START_BANK(0), NUM_BANKS(2);
-        1 : BASE(10424320), ENTRY_SIZE(64), START_BANK(2), NUM_BANKS(2);
-        2 : BASE(31272960), ENTRY_SIZE(64), START_BANK(4), NUM_BANKS(2);
+        2 : BASE(2605056), ENTRY_SIZE(32), START_BANK(0), NUM_BANKS(1);
+        0 : BASE(0), ENTRY_SIZE(64), START_BANK(0), NUM_BANKS(2);
+        3 : BASE(3907584), ENTRY_SIZE(32), START_BANK(1), NUM_BANKS(1);
+        1 : BASE(1302528), ENTRY_SIZE(64), START_BANK(2), NUM_BANKS(2);
     }
 
     table PROFILE_CFG(%PROFILE) {
 
-        11 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        11 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// rx_phy_port_to_pr_map
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (224, 5, 'h18),
@@ -2893,37 +3061,37 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        13 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        13 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// ipv4_ipsec_tunnel_term_table
 			LUT {
-				OBJECT_ID(1),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(8),
+				NUM_ACTIONS(4),
 				MISS_ACTION0(3774988352),
 				EXTRACT {
 					WORD0 (33, 12, 'hFFFF),
@@ -2934,18 +3102,34 @@ block SEM {
 
 			}
 , 
-			// empty_sem_1
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(1),
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        15 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
-			// empty_sem_0
+        15 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
@@ -2953,10 +3137,10 @@ block SEM {
 , 
 			// always_recirculate_table
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774988352),
 				EXTRACT {
 					WORD0 (4, 0, 'hFFFF),
@@ -2965,29 +3149,29 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        1 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        1 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// rx_ipv4_tunnel_source_port
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(3),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (33, 12, 'hFFFF),
@@ -3000,10 +3184,10 @@ block SEM {
 , 
 			// ipv4_tunnel_term_table
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(2),
 				MISS_ACTION0(3774988352),
 				MISS_ACTION1(3896508673),
 				EXTRACT {
@@ -3015,29 +3199,29 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        2 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        2 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(14), HASH_SIZE1(11), HASH_SIZE2(10), HASH_SIZE3(9), HASH_SIZE4(8), HASH_SIZE5(7), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// rx_ipv6_tunnel_source_port
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(1),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (41, 8, 'hFFFF),
@@ -3056,10 +3240,10 @@ block SEM {
 , 
 			// ipv6_tunnel_term_table
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(2),
 				EXTRACT {
 					WORD0 (41, 8, 'hFFFF),
 					WORD1 (41, 10, 'hFFFF),
@@ -3075,13 +3259,13 @@ block SEM {
 
 			}
 ;
-        3 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        3 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// rx_source_port
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (224, 5, 'h18),
@@ -3090,37 +3274,37 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        6 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        6 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// source_port_to_pr_map
 			LUT {
-				OBJECT_ID(1),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (228, 8, 'hFFFF),
@@ -3129,21 +3313,37 @@ block SEM {
 
 			}
 , 
-			// empty_sem_1
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(1),
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        5 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        5 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// rx_lag_table
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (224, 5, 'h18),
@@ -3152,37 +3352,37 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        4 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        4 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// vsi_to_vsi_loopback
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(1),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (224, 24, 'h7FF),
@@ -3191,34 +3391,34 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        16 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
-			// empty_sem_0
+        16 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
@@ -3226,10 +3426,10 @@ block SEM {
 , 
 			// always_trap_arp_table
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(2),
 				MISS_ACTION0(3774988352),
 				MISS_ACTION1(3896508673),
 				EXTRACT {
@@ -3239,29 +3439,29 @@ block SEM {
 
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 , 
-			// empty_sem_0
+			// empty_sem_2
 			LUT {
-				OBJECT_ID(0),
+				OBJECT_ID(2),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        10 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        10 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(15), HASH_SIZE1(12), HASH_SIZE2(11), HASH_SIZE3(10), HASH_SIZE4(9), HASH_SIZE5(8), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// tx_acc_vsi
 			LUT {
 				OBJECT_ID(2),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(4),
+				NUM_ACTIONS(2),
 				MISS_ACTION0(3774874625),
 				EXTRACT {
 					WORD0 (224, 24, 'h7FF),
@@ -3277,14 +3477,30 @@ block SEM {
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
+, 
+			// empty_sem_2
+			LUT {
+				OBJECT_ID(2),
+				VSI_LIST_EN(0),
+				INV_ACTION(0),
+				NUM_ACTIONS(1)
+			}
 ;
-        8 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        8 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(14), HASH_SIZE1(11), HASH_SIZE2(10), HASH_SIZE3(9), HASH_SIZE4(8), HASH_SIZE5(7), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// l2_to_tunnel_v4
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(12),
+				NUM_ACTIONS(8),
 				MISS_ACTION0(3774988352),
 				EXTRACT {
 					WORD0 (1, 0, 'hFFFF),
@@ -3294,18 +3510,18 @@ block SEM {
 
 			}
 , 
-			// empty_sem_2
+			// empty_sem_0
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        9 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        9 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(14), HASH_SIZE1(11), HASH_SIZE2(10), HASH_SIZE3(9), HASH_SIZE4(8), HASH_SIZE5(7), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// l2_to_tunnel_v6
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
 				NUM_ACTIONS(12),
@@ -3318,18 +3534,18 @@ block SEM {
 
 			}
 , 
-			// empty_sem_2
+			// empty_sem_0
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(0),
 				INV_ACTION(0),
 				NUM_ACTIONS(1)
 			}
 ;
-        14 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(18), HASH_SIZE1(15), HASH_SIZE2(14), HASH_SIZE3(13), HASH_SIZE4(12), HASH_SIZE5(11), PINNED_LOOKUP(0), AGING_MODE(NONE), 
+        14 : SWID_SRC(DERIVE), COMPRESS_KEY(0), AUX_PREC(0), HASH_SIZE0(14), HASH_SIZE1(11), HASH_SIZE2(10), HASH_SIZE3(9), HASH_SIZE4(8), HASH_SIZE5(7), PINNED_LOOKUP(0), AGING_MODE(NONE), 
 			// nexthop_table
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(0),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
 				NUM_ACTIONS(12),
@@ -3342,10 +3558,10 @@ block SEM {
 , 
 			// ipsec_tx_sa_classification_table
 			LUT {
-				OBJECT_ID(2),
+				OBJECT_ID(1),
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
-				NUM_ACTIONS(12),
+				NUM_ACTIONS(8),
 				EXTRACT {
 					WORD0 (32, 16, 'hFFFF),
 					WORD1 (32, 18, 'hFFFF),
@@ -3407,26 +3623,22 @@ block LEM {
 		0 : 
 			ENTRY_SIZE(64), 
 			START_BANK(0), 
-			NUM_BANKS(2);
-		1 : 
-			ENTRY_SIZE(64), 
-			START_BANK(2), 
-			NUM_BANKS(2);
+			NUM_BANKS(1);
 
     }
     table PROFILE_CFG(%PROFILE) {
 		7 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(7), 
 			LUT {
-				NUM_ACTIONS(4), 
+				NUM_ACTIONS(3), 
 				OBJECT_ID(0), 
 				EXTRACT {
 					WORD0(32, 12, 'hFFFF), 
@@ -3435,16 +3647,16 @@ block LEM {
 			};
 		8 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(8), 
 			LUT {
-				NUM_ACTIONS(4), 
+				NUM_ACTIONS(3), 
 				OBJECT_ID(0), 
 				EXTRACT {
 					WORD0(32, 16, 'hFFFF), 
@@ -3453,16 +3665,16 @@ block LEM {
 			};
 		1 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(1), 
 			LUT {
-				NUM_ACTIONS(8), 
+				NUM_ACTIONS(7), 
 				OBJECT_ID(0), 
 				MISS_ACTION0(964689920), 
 				MISS_ACTION1(3774988352), 
@@ -3476,16 +3688,16 @@ block LEM {
 			};
 		9 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(9), 
 			LUT {
-				NUM_ACTIONS(8), 
+				NUM_ACTIONS(3), 
 				OBJECT_ID(0), 
 				MISS_ACTION0(964689920), 
 				MISS_ACTION1(3774988352), 
@@ -3499,16 +3711,16 @@ block LEM {
 			};
 		4 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(4), 
 			LUT {
-				NUM_ACTIONS(8), 
+				NUM_ACTIONS(7), 
 				OBJECT_ID(0), 
 				MISS_ACTION0(964689920), 
 				MISS_ACTION1(3774988352), 
@@ -3524,16 +3736,16 @@ block LEM {
 			};
 		10 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(10), 
 			LUT {
-				NUM_ACTIONS(12), 
+				NUM_ACTIONS(6), 
 				OBJECT_ID(0), 
 				EXTRACT {
 					WORD0(32, 16, 'hFFFF), 
@@ -3543,16 +3755,16 @@ block LEM {
 			};
 		11 : 
 			PINNED(0), 
-			HASH_SIZE0(18), 
-			HASH_SIZE1(15), 
-			HASH_SIZE2(14), 
-			HASH_SIZE3(13), 
-			HASH_SIZE4(12), 
-			HASH_SIZE5(11), 
+			HASH_SIZE0(15), 
+			HASH_SIZE1(12), 
+			HASH_SIZE2(11), 
+			HASH_SIZE3(10), 
+			HASH_SIZE4(9), 
+			HASH_SIZE5(8), 
 			AUX_PREC(0), 
 			PROFILE_GROUP(11), 
 			LUT {
-				NUM_ACTIONS(12), 
+				NUM_ACTIONS(2), 
 				OBJECT_ID(0), 
 				EXTRACT {
 					WORD0(224, 15, 'hFFFF), 
@@ -3575,8 +3787,6 @@ block LEM {
     }
     table HASH_SPACE_CFG(%HASH_SPACE_ID) {
 		0 : 
-			BASE('h0);
-		1 : 
 			BASE('h0);
 
     }
@@ -3678,33 +3888,34 @@ block HASH {
 
     }
     tcam PROFILE(%PTYPE_GROUP, %VSI_GROUP, %MD_KEY) {
-		@0 { 1, 'b????_?, 'b????_????_????_???0 : 1; }
-		@1 { 2, 'b????_?, 'b????_????_????_???0 : 2; }
-		@2 { 3, 'b????_?, 'b????_????_????_???0 : 3; }
-		@3 { 10, 'b????_?, 'b????_????_????_???0 : 10; }
-		@4 { 6, 'b????_?, 'b????_????_????_???0 : 10; }
+		@0 { 10, 'b????_?, 'b????_????_????_???0 : 1; }
+		@1 { 1, 'b????_?, 'b????_????_????_???0 : 1; }
+		@2 { 2, 'b????_?, 'b????_????_????_???0 : 2; }
+		@3 { 3, 'b????_?, 'b????_????_????_???0 : 3; }
+		@4 { 6, 'b????_?, 'b????_????_????_???0 : 1; }
 		@5 { 4, 'b????_?, 'b????_????_????_???0 : 4; }
 		@6 { 5, 'b????_?, 'b????_????_????_???0 : 5; }
-		@7 { 3, 'b????_?, 'b????_????_???1_00?1 : 7; }
-		@8 { 2, 'b????_?, 'b????_????_???1_00?1 : 7; }
-		@9 { 1, 'b????_?, 'b????_????_???1_00?1 : 7; }
-		@10 { 6, 'b????_?, 'b????_????_???1_00?1 : 8; }
-		@11 { 5, 'b????_?, 'b????_????_???1_00?1 : 8; }
-		@12 { 4, 'b????_?, 'b????_????_???1_00?1 : 8; }
-		@13 { 10, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@14 { 3, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@15 { 2, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@16 { 1, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@17 { 6, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@18 { 5, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@19 { 4, 'b????_?, 'b????_????_??1?_00?1 : 9; }
-		@20 { 10, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@21 { 3, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@22 { 2, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@23 { 1, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@24 { 6, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@25 { 5, 'b????_?, 'b????_????_????_00?1 : 11; }
-		@26 { 4, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@7 { 10, 'b????_?, 'b????_????_???1_00?1 : 7; }
+		@8 { 3, 'b????_?, 'b????_????_???1_00?1 : 7; }
+		@9 { 2, 'b????_?, 'b????_????_???1_00?1 : 7; }
+		@10 { 1, 'b????_?, 'b????_????_???1_00?1 : 7; }
+		@11 { 6, 'b????_?, 'b????_????_???1_00?1 : 8; }
+		@12 { 5, 'b????_?, 'b????_????_???1_00?1 : 8; }
+		@13 { 4, 'b????_?, 'b????_????_???1_00?1 : 8; }
+		@14 { 10, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@15 { 3, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@16 { 2, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@17 { 1, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@18 { 6, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@19 { 5, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@20 { 4, 'b????_?, 'b????_????_??1?_00?1 : 9; }
+		@21 { 10, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@22 { 3, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@23 { 2, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@24 { 1, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@25 { 6, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@26 { 5, 'b????_?, 'b????_????_????_00?1 : 11; }
+		@27 { 4, 'b????_?, 'b????_????_????_00?1 : 11; }
 		@4095 { 'b????, 'b????_?, 'h???? : 0; }
 
     }
@@ -3759,40 +3970,35 @@ block HASH {
 			MASK_SELECT(3), 
 			TC_OVR(0), 
 			VSI_PROFILE_OVR(1);
-	10 : 
+	4 : 
 			TYPE(QUEUE), 
 			MASK_SELECT(4), 
 			TC_OVR(0), 
 			VSI_PROFILE_OVR(1);
-	4 : 
-			TYPE(QUEUE), 
-			MASK_SELECT(5), 
-			TC_OVR(0), 
-			VSI_PROFILE_OVR(1);
 	5 : 
 			TYPE(QUEUE), 
-			MASK_SELECT(6), 
+			MASK_SELECT(5), 
 			TC_OVR(0), 
 			VSI_PROFILE_OVR(1);
 	7 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
-			MASK_SELECT(7), 
+			MASK_SELECT(6), 
 			VSI_PROFILE_OVR(1);
 	8 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
-			MASK_SELECT(8), 
+			MASK_SELECT(7), 
 			VSI_PROFILE_OVR(1);
 	9 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
-			MASK_SELECT(9), 
+			MASK_SELECT(8), 
 			VSI_PROFILE_OVR(1);
 	11 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
-			MASK_SELECT(10), 
+			MASK_SELECT(9), 
 			VSI_PROFILE_OVR(1);
 	0 : 
 			TYPE(QUEUE), 
@@ -3837,19 +4043,6 @@ block HASH {
 			BYTE5(32, 17), 
 			BYTE6(32, 18), 
 			BYTE7(32, 19);
-		10 : 
-			BYTE0(1, 6), 
-			BYTE1(1, 7), 
-			BYTE2(1, 8), 
-			BYTE3(1, 9), 
-			BYTE4(1, 10), 
-			BYTE5(1, 11), 
-			BYTE6(1, 0), 
-			BYTE7(1, 1), 
-			BYTE8(1, 2), 
-			BYTE9(1, 3), 
-			BYTE10(1, 4), 
-			BYTE11(1, 5);
 		4 : 
 			BYTE0(40, 8), 
 			BYTE1(40, 9), 
@@ -4057,7 +4250,31 @@ block HASH {
 			BYTE8('hFF), 
 			BYTE9('hFF), 
 			BYTE10('hFF), 
-			BYTE11('hFF);
+			BYTE11('hFF), 
+			BYTE12('hFF), 
+			BYTE13('hFF), 
+			BYTE14('hFF), 
+			BYTE15('hFF), 
+			BYTE16('hFF), 
+			BYTE17('hFF), 
+			BYTE18('hFF), 
+			BYTE19('hFF), 
+			BYTE20('hFF), 
+			BYTE21('hFF), 
+			BYTE22('hFF), 
+			BYTE23('hFF), 
+			BYTE24('hFF), 
+			BYTE25('hFF), 
+			BYTE26('hFF), 
+			BYTE27('hFF), 
+			BYTE28('hFF), 
+			BYTE29('hFF), 
+			BYTE30('hFF), 
+			BYTE31('hFF), 
+			BYTE32('hFF), 
+			BYTE33('hFF), 
+			BYTE34('hFF), 
+			BYTE35('hFF);
 		5 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
@@ -4108,45 +4325,8 @@ block HASH {
 			BYTE9('hFF), 
 			BYTE10('hFF), 
 			BYTE11('hFF), 
-			BYTE12('hFF), 
-			BYTE13('hFF), 
-			BYTE14('hFF), 
-			BYTE15('hFF), 
-			BYTE16('hFF), 
-			BYTE17('hFF), 
-			BYTE18('hFF), 
-			BYTE19('hFF), 
-			BYTE20('hFF), 
-			BYTE21('hFF), 
-			BYTE22('hFF), 
-			BYTE23('hFF), 
-			BYTE24('hFF), 
-			BYTE25('hFF), 
-			BYTE26('hFF), 
-			BYTE27('hFF), 
-			BYTE28('hFF), 
-			BYTE29('hFF), 
-			BYTE30('hFF), 
-			BYTE31('hFF), 
-			BYTE32('hFF), 
-			BYTE33('hFF), 
-			BYTE34('hFF), 
-			BYTE35('hFF);
-		7 : 
-			BYTE0('hFF), 
-			BYTE1('hFF), 
-			BYTE2('hFF), 
-			BYTE3('hFF), 
-			BYTE4('hFF), 
-			BYTE5('hFF), 
-			BYTE6('hFF), 
-			BYTE7('hFF), 
-			BYTE8('hFF), 
-			BYTE9('hFF), 
-			BYTE10('hFF), 
-			BYTE11('hFF), 
 			BYTE12('hFF);
-		8 : 
+		7 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 
@@ -4184,7 +4364,7 @@ block HASH {
 			BYTE34('hFF), 
 			BYTE35('hFF), 
 			BYTE36('hFF);
-		9 : 
+		8 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 
@@ -4197,7 +4377,7 @@ block HASH {
 			BYTE9('hFF), 
 			BYTE10('hFF), 
 			BYTE11('hFF);
-		10 : 
+		9 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 

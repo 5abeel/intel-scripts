@@ -1,0 +1,79 @@
+{
+ "deviceId": "0",
+ "roleId": "0",
+ "updates": [
+  {
+   "type": "INSERT",
+   "entity": {
+    "tableEntry": {
+     "tableId": 41667918,
+     "match": [
+      {
+       "fieldId": 1,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      }
+     ],
+     "action": {
+      "action": {
+       "actionId": 17061464,
+       "params": [
+        {
+         "paramId": 1,
+         "paramValue": "0",
+         "paramName": "",
+         "protoId": "",
+         "keyName": ""
+        }
+       ]
+      }
+     },
+     "priority": 0,
+     "controllerMetadata": "0",
+     "isDefaultAction": true,
+     "idleTimeoutNs": "0",
+     "metadata": ""
+    }
+   }
+  },
+  {
+   "type": "INSERT",
+   "entity": {
+    "tableEntry": {
+     "tableId": 43524029,
+     "match": [
+      {
+       "fieldId": 1,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      }
+     ],
+     "action": {
+      "action": {
+       "actionId": 25701894,
+       "params": [
+        {
+         "paramId": 1,
+         "paramValue": "0",
+         "paramName": "",
+         "protoId": "",
+         "keyName": ""
+        }
+       ]
+      }
+     },
+     "priority": 0,
+     "controllerMetadata": "0",
+     "isDefaultAction": true,
+     "idleTimeoutNs": "0",
+     "metadata": ""
+    }
+   }
+  }
+ ],
+ "atomicity": "CONTINUE_ON_ERROR"
+}
