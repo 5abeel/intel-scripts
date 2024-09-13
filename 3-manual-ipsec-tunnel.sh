@@ -23,6 +23,43 @@ IPSEC_VF_INTF (ens801f0v2)---------PR-------> ACC_PR3_INTF (enp0s1f0d6)         
 
 
 
+# On LP
+# =====
+
+ip xfrm state deleteall
+ip xfrm policy deleteall
+
+CVL_INTF=ens801f0
+
+ip link add dev TEP10 type dummy
+ifconfig TEP10 10.1.1.2/24 up
+sleep 1
+
+# vxlan10 interface
+ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
+ip addr add 192.168.1.102/24 dev vxlan10
+ip link set vxlan10 up
+
+ifconfig ${CVL_INTF} 1.1.1.2/24 up
+sleep 2
+ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
+ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
+ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF # if this fails, use 'ip route add' instead
+
+ip link add dev IPSECAPP type dummy
+ifconfig IPSECAPP 11.0.0.2/24 up
+ip route change 11.0.0.0/24 dev vxlan10 # if this fails, use 'ip route add' instead
+
+
+
+# For VXLAN + IPsec tunnel mode --> need to set IPSECAPP interface to lower MTU size
+# On host
+ip link set dev IPSECAPP mtu 1400
+
+
+# On ACC
+# ======
+
 HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
 ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
 
@@ -63,7 +100,7 @@ p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.la
 
 # For IPsec tunnel mode
 
-IPSEC_VF_INTF=ens801f0v2 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
+IPSEC_VF_INTF=ens801f0v1 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
 ACC_PR3_INTF=enp0s1f0d6 ; ACC_PR3_VSI=13 ; ACC_PR3_PORT=29
 
 echo "IPSEC_VF - ACC_PR1:"
@@ -149,38 +186,12 @@ sleep 2
 ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
 
 
-# On LP
-# =====
 
-ip xfrm state deleteall
-ip xfrm policy deleteall
+# On Host
+# =======
 
-CVL_INTF=ens801f0
-
-ip link add dev TEP10 type dummy
-ifconfig TEP10 10.1.1.2/24 up
-sleep 1
-
-# vxlan10 interface
-ip link add vxlan10 type vxlan id 10 dstport 4789 remote 10.1.1.1 local 10.1.1.2
-ip addr add 192.168.1.102/24 dev vxlan10
-ip link set vxlan10 up
-
-ifconfig ${CVL_INTF} 1.1.1.2/24 up
-sleep 2
-ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
-ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
-ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF # if this fails, use 'ip route add' instead
-
-ip link add dev IPSECAPP type dummy
-ifconfig IPSECAPP 11.0.0.2/24 up
-ip route change 11.0.0.0/24 dev vxlan10 # if this fails, use 'ip route add' instead
-
-
-
-# For VXLAN + IPsec tunnel mode --> need to set IPSECAPP interface to lower MTU size
-# On host
-ip link set dev IPSECAPP mtu 1400
+ip addr add dev ens801f0v0 192.168.1.101/24
+ip addr add dev ens801f0v1 11.0.0.1/24
 
 
 # Cleanup LP
