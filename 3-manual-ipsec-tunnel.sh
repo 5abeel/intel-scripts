@@ -125,52 +125,6 @@ ovs-vsctl set Open_vSwitch . other_config:n-revalidator-threads=1
 ovs-vsctl set Open_vSwitch . other_config:n-handler-threads=1
 ovs-vsctl  show
 
-# Use case 1: Basic untagged traffic
-# ==================================
-ovs-vsctl add-br br-intrnl
-ovs-vsctl add-port br-intrnl enp0s1f0d4
-ovs-vsctl add-port br-intrnl enp0s1f0d5
-ovs-vsctl add-port br-intrnl enp0s1f0d6
-ifconfig br-intrnl up
-ovs-vsctl show
-
-# On LP
-#======
-CVL_INTF=ens801f0
-
-ip addr add dev ${CVL_INTF} 192.168.1.102/24
-
-ip link add dev IPSECAPP type dummy
-ifconfig IPSECAPP 11.0.0.2/24 up
-sleep 1
-ip addr show IPSECAPP
-
-ip route change 11.0.0.0/24 dev ${CVL_INTF}
-
-
-###########################
-## Checkpoint. Test #######
-## ping host <--> LP
-###########################
-
-## Use case 2: VXLAN traffic
-# ==========================
-
-# Cleanup previous bridge
-# ====================
-
-ifconfig br-intrnl down
-ovs-vsctl del-port br-intrnl enp0s1f0d6
-ovs-vsctl del-port br-intrnl enp0s1f0d5
-ovs-vsctl del-port br-intrnl enp0s1f0d4
-ovs-vsctl del-br br-intrnl
-ovs-vsctl show
-
-# On LP
-# ====
-ip addr del dev ens801f0 192.168.1.102/24
-
-
 # Setup br-intrnl
 # ===============
 ovs-vsctl add-br br-intrnl
@@ -367,5 +321,54 @@ devmem 0x2024D02400 32 0x80000000
 devmem 0x2024E02000 32 0x4830000
 devmem 0x2024E02400 32 0x80000000
 
+
+
+###########################333
+
+
+# Use case 1: Basic untagged traffic
+# ==================================
+ovs-vsctl add-br br-intrnl
+ovs-vsctl add-port br-intrnl enp0s1f0d4
+ovs-vsctl add-port br-intrnl enp0s1f0d5
+ovs-vsctl add-port br-intrnl enp0s1f0d6
+ifconfig br-intrnl up
+ovs-vsctl show
+
+# On LP
+#======
+CVL_INTF=ens801f0
+
+ip addr add dev ${CVL_INTF} 192.168.1.102/24
+
+ip link add dev IPSECAPP type dummy
+ifconfig IPSECAPP 11.0.0.2/24 up
+sleep 1
+ip addr show IPSECAPP
+
+ip route change 11.0.0.0/24 dev ${CVL_INTF}
+
+
+###########################
+## Checkpoint. Test #######
+## ping host <--> LP
+###########################
+
+## Use case 2: VXLAN traffic
+# ==========================
+
+# Cleanup previous bridge
+# ====================
+
+ifconfig br-intrnl down
+ovs-vsctl del-port br-intrnl enp0s1f0d6
+ovs-vsctl del-port br-intrnl enp0s1f0d5
+ovs-vsctl del-port br-intrnl enp0s1f0d4
+ovs-vsctl del-br br-intrnl
+ovs-vsctl show
+
+# On LP
+# ====
+ip addr del dev ens801f0 192.168.1.102/24
 
 
