@@ -67,7 +67,7 @@ set_interface_ip() {
 
 start_infrap4d() {
     printf "Starting infrap4d..."
-    /opt/p4/p4-cp-nws/sbin/infrap4d --local_stratum_url="$GRPC_ADDR_IP:9559" --external_stratum_urls="$GRPC_ADDR_IP:9339,$GRPC_ADDR_IP:9559"
+    /opt/p4/p4-cp-nws/sbin/infrap4d -disable_krnlmon --local_stratum_url="$GRPC_ADDR_IP:9559" --external_stratum_urls="$GRPC_ADDR_IP:9339,$GRPC_ADDR_IP:9559"
     printf "OK\n"
 }
 

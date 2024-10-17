@@ -1,4 +1,4 @@
-/* p4c-pna-xxp version: 3.0.70.124 */ 
+/* p4c-pna-xxp version: 3.0.70.128 */ 
 
 name "Sample P4 Program pkg";
 version 1.0.73.35;
@@ -3188,8 +3188,8 @@ block SEM {
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
 				NUM_ACTIONS(2),
-				MISS_ACTION0(3774988352),
-				MISS_ACTION1(3896508673),
+				MISS_ACTION0(3896508673),
+				MISS_ACTION1(3774988352),
 				EXTRACT {
 					WORD0 (33, 12, 'hFFFF),
 					WORD1 (33, 14, 'hFFFF),
@@ -3430,8 +3430,8 @@ block SEM {
 				VSI_LIST_EN(1),
 				INV_ACTION(0),
 				NUM_ACTIONS(2),
-				MISS_ACTION0(3774988352),
-				MISS_ACTION1(3896508673),
+				MISS_ACTION0(3896508673),
+				MISS_ACTION1(3774988352),
 				EXTRACT {
 					WORD0 (4, 0, 'hFFFF),
 					WORD1 (4, 0, 'hFFFF)
@@ -3624,6 +3624,10 @@ block LEM {
 			ENTRY_SIZE(64), 
 			START_BANK(0), 
 			NUM_BANKS(1);
+		1 : 
+			ENTRY_SIZE(64), 
+			START_BANK(1), 
+			NUM_BANKS(1);
 
     }
     table PROFILE_CFG(%PROFILE) {
@@ -3657,7 +3661,7 @@ block LEM {
 			PROFILE_GROUP(8), 
 			LUT {
 				NUM_ACTIONS(3), 
-				OBJECT_ID(0), 
+				OBJECT_ID(1), 
 				EXTRACT {
 					WORD0(32, 16, 'hFFFF), 
 					WORD1(32, 18, 'hFFFF)
@@ -3676,9 +3680,9 @@ block LEM {
 			LUT {
 				NUM_ACTIONS(7), 
 				OBJECT_ID(0), 
-				MISS_ACTION0(964689920), 
-				MISS_ACTION1(3774988352), 
-				MISS_ACTION2(3896508673), 
+				MISS_ACTION0(3896508673), 
+				MISS_ACTION1(964689920), 
+				MISS_ACTION2(3774988352), 
 				EXTRACT {
 					WORD0(229, 4, 'hFF), 
 					WORD1(1, 0, 'hFFFF), 
@@ -3698,10 +3702,10 @@ block LEM {
 			PROFILE_GROUP(9), 
 			LUT {
 				NUM_ACTIONS(3), 
-				OBJECT_ID(0), 
-				MISS_ACTION0(964689920), 
-				MISS_ACTION1(3774988352), 
-				MISS_ACTION2(3896508673), 
+				OBJECT_ID(1), 
+				MISS_ACTION0(3896508673), 
+				MISS_ACTION1(964689920), 
+				MISS_ACTION2(3774988352), 
 				EXTRACT {
 					WORD0(1, 6, 'hFFFF), 
 					WORD1(1, 8, 'hFFFF), 
@@ -3722,11 +3726,11 @@ block LEM {
 			LUT {
 				NUM_ACTIONS(7), 
 				OBJECT_ID(0), 
-				MISS_ACTION0(964689920), 
-				MISS_ACTION1(3774988352), 
-				MISS_ACTION2(1656437820), 
-				MISS_ACTION3(1946157057), 
-				MISS_ACTION4(3896508673), 
+				MISS_ACTION0(3896508673), 
+				MISS_ACTION1(964689920), 
+				MISS_ACTION2(3774988352), 
+				MISS_ACTION3(1656437820), 
+				MISS_ACTION4(1946157057), 
 				EXTRACT {
 					WORD0(229, 4, 'hFF), 
 					WORD1(1, 0, 'hFFFF), 
@@ -3788,6 +3792,8 @@ block LEM {
     table HASH_SPACE_CFG(%HASH_SPACE_ID) {
 		0 : 
 			BASE('h0);
+		1 : 
+			BASE('h27C000);
 
     }
 
@@ -3892,9 +3898,9 @@ block HASH {
 		@1 { 1, 'b????_?, 'b????_????_????_???0 : 1; }
 		@2 { 2, 'b????_?, 'b????_????_????_???0 : 2; }
 		@3 { 3, 'b????_?, 'b????_????_????_???0 : 3; }
-		@4 { 6, 'b????_?, 'b????_????_????_???0 : 1; }
-		@5 { 4, 'b????_?, 'b????_????_????_???0 : 4; }
-		@6 { 5, 'b????_?, 'b????_????_????_???0 : 5; }
+		@4 { 4, 'b????_?, 'b????_????_????_???0 : 4; }
+		@5 { 5, 'b????_?, 'b????_????_????_???0 : 5; }
+		@6 { 6, 'b????_?, 'b????_????_????_???0 : 6; }
 		@7 { 10, 'b????_?, 'b????_????_???1_00?1 : 7; }
 		@8 { 3, 'b????_?, 'b????_????_???1_00?1 : 7; }
 		@9 { 2, 'b????_?, 'b????_????_???1_00?1 : 7; }
@@ -3920,38 +3926,58 @@ block HASH {
 
     }
 
-    define LUT linux_networking_control_hash_ipv4_tcp_lut {
+    define LUT linux_networking_control_rss_hash_tcp_lut {
 		BASE('h0),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_ipv4_udp_lut {
+    define LUT linux_networking_control_rss_hash_udp_lut {
 		BASE('h80),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_ipv4_lut {
+    define LUT linux_networking_control_rss_hash_lut {
 		BASE('h100),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_l2_lut {
+    define LUT linux_networking_control_rss_hash_ipv6_tcp_lut {
 		BASE('h180),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_ipv6_tcp_lut {
+    define LUT linux_networking_control_rss_hash_ipv6_udp_lut {
 		BASE('h200),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_ipv6_udp_lut {
+    define LUT linux_networking_control_rss_hash_ipv6_lut {
 		BASE('h280),
 		SIZE('h80)
     }
 
-    define LUT linux_networking_control_hash_ipv6_lut {
+    define LUT linux_networking_control_rss_hash_l2_lut {
 		BASE('h300),
+		SIZE('h80)
+    }
+
+    define LUT linux_networking_control_ecmp_hash_fn_lut {
+		BASE('h380),
+		SIZE('h80)
+    }
+
+    define LUT linux_networking_control_ecmp_hash_v6_fn_lut {
+		BASE('h400),
+		SIZE('h80)
+    }
+
+    define LUT linux_networking_control_lag_hash_fn_lut {
+		BASE('h480),
+		SIZE('h80)
+    }
+
+    define LUT linux_networking_control_src_port_hash_fn_lut {
+		BASE('h500),
 		SIZE('h80)
     }
     table PROFILE_LUT_CFG(%PROFILE) {
@@ -3980,25 +4006,30 @@ block HASH {
 			MASK_SELECT(5), 
 			TC_OVR(0), 
 			VSI_PROFILE_OVR(1);
-	7 : 
-			TYPE(INTERNAL), 
-			ALG(TOEPLITZ), 
+	6 : 
+			TYPE(QUEUE), 
 			MASK_SELECT(6), 
+			TC_OVR(0), 
 			VSI_PROFILE_OVR(1);
-	8 : 
+	7 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
 			MASK_SELECT(7), 
 			VSI_PROFILE_OVR(1);
-	9 : 
+	8 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
 			MASK_SELECT(8), 
 			VSI_PROFILE_OVR(1);
-	11 : 
+	9 : 
 			TYPE(INTERNAL), 
 			ALG(TOEPLITZ), 
 			MASK_SELECT(9), 
+			VSI_PROFILE_OVR(1);
+	11 : 
+			TYPE(INTERNAL), 
+			ALG(TOEPLITZ), 
+			MASK_SELECT(10), 
 			VSI_PROFILE_OVR(1);
 	0 : 
 			TYPE(QUEUE), 
@@ -4117,6 +4148,39 @@ block HASH {
 			BYTE33(52, 1), 
 			BYTE34(52, 2), 
 			BYTE35(52, 3);
+		6 : 
+			BYTE0(40, 8), 
+			BYTE1(40, 9), 
+			BYTE2(40, 10), 
+			BYTE3(40, 11), 
+			BYTE4(40, 12), 
+			BYTE5(40, 13), 
+			BYTE6(40, 14), 
+			BYTE7(40, 15), 
+			BYTE8(40, 16), 
+			BYTE9(40, 17), 
+			BYTE10(40, 18), 
+			BYTE11(40, 19), 
+			BYTE12(40, 20), 
+			BYTE13(40, 21), 
+			BYTE14(40, 22), 
+			BYTE15(40, 23), 
+			BYTE16(40, 24), 
+			BYTE17(40, 25), 
+			BYTE18(40, 26), 
+			BYTE19(40, 27), 
+			BYTE20(40, 28), 
+			BYTE21(40, 29), 
+			BYTE22(40, 30), 
+			BYTE23(40, 31), 
+			BYTE24(40, 32), 
+			BYTE25(40, 33), 
+			BYTE26(40, 34), 
+			BYTE27(40, 35), 
+			BYTE28(40, 36), 
+			BYTE29(40, 37), 
+			BYTE30(40, 38), 
+			BYTE31(40, 39);
 		7 : 
 			BYTE0(32, 12), 
 			BYTE1(32, 13), 
@@ -4325,8 +4389,41 @@ block HASH {
 			BYTE9('hFF), 
 			BYTE10('hFF), 
 			BYTE11('hFF), 
-			BYTE12('hFF);
+			BYTE12('hFF), 
+			BYTE13('hFF), 
+			BYTE14('hFF), 
+			BYTE15('hFF), 
+			BYTE16('hFF), 
+			BYTE17('hFF), 
+			BYTE18('hFF), 
+			BYTE19('hFF), 
+			BYTE20('hFF), 
+			BYTE21('hFF), 
+			BYTE22('hFF), 
+			BYTE23('hFF), 
+			BYTE24('hFF), 
+			BYTE25('hFF), 
+			BYTE26('hFF), 
+			BYTE27('hFF), 
+			BYTE28('hFF), 
+			BYTE29('hFF), 
+			BYTE30('hFF), 
+			BYTE31('hFF);
 		7 : 
+			BYTE0('hFF), 
+			BYTE1('hFF), 
+			BYTE2('hFF), 
+			BYTE3('hFF), 
+			BYTE4('hFF), 
+			BYTE5('hFF), 
+			BYTE6('hFF), 
+			BYTE7('hFF), 
+			BYTE8('hFF), 
+			BYTE9('hFF), 
+			BYTE10('hFF), 
+			BYTE11('hFF), 
+			BYTE12('hFF);
+		8 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 
@@ -4364,7 +4461,7 @@ block HASH {
 			BYTE34('hFF), 
 			BYTE35('hFF), 
 			BYTE36('hFF);
-		8 : 
+		9 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 
@@ -4377,7 +4474,7 @@ block HASH {
 			BYTE9('hFF), 
 			BYTE10('hFF), 
 			BYTE11('hFF);
-		9 : 
+		10 : 
 			BYTE0('hFF), 
 			BYTE1('hFF), 
 			BYTE2('hFF), 
