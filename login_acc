@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ssh -t root@100.0.0.100 '
+   ssh -t root@192.168.0.2
+'
