@@ -43,7 +43,7 @@ elif [ "$MODE" = "VXLAN" ]; then
         ip addr add 192.168.1.102/24 dev vxlan10
         ip link set vxlan10 up
         ifconfig $CVL_INTF 1.1.1.2/24 up
-        ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
+        ip route replace 1.1.1.0/24 dev $CVL_INTF
         sleep 2
         ip route replace 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
         
@@ -290,12 +290,7 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
         sleep 1
         ifconfig TEP10 10.1.1.1/24 up
         sleep 2
-        # ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
-        # Attempt 'ip route change', if it fails, try 'ip route add'
-        if ! ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl; then
-            echo "ip route change failed, attempting ip route add..."
-            ip route add 10.1.1.0/24 via 1.1.1.2 dev br-tunl
-        fi
+        ip route replace 10.1.1.0/24 via 1.1.1.2 dev br-tunl
         ovs-vsctl show
     else
         echo "Invalid MODE specified. Please use UNTAGGED or VXLAN."
