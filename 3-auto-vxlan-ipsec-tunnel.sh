@@ -45,21 +45,13 @@ elif [ "$MODE" = "VXLAN" ]; then
         ifconfig $CVL_INTF 1.1.1.2/24 up
         ip route add 1.1.1.0/24 dev $CVL_INTF # this should be auto-created, but sometimes doesnt - manually adding here
         sleep 2
-        # Attempt 'ip route change', if it fails, try 'ip route add'
-        if ! ip route change 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF; then
-            echo "ip route change failed, attempting ip route add..."
-            ip route add 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
-        fi
+        ip route replace 10.1.1.0/24 via 1.1.1.1 dev $CVL_INTF
         
         # VXLAN + IPsec tunnel mode
         ip link add dev IPSECAPP type dummy
         ifconfig IPSECAPP 11.0.0.2/24 up
         sleep 3
-        # Attempt 'ip route change', if it fails, try 'ip route add'
-        if ! ip route change 11.0.0.0/24 dev vxlan10; then
-            echo "ip route change failed, attempting ip route add..."
-            ip route add 11.0.0.0/24 dev vxlan10
-        fi
+        ip route replace 11.0.0.0/24 dev vxlan10
 
         ip -br a
 LP_EOF
