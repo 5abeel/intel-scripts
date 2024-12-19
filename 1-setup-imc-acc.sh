@@ -3,10 +3,10 @@
 # Source the environment file
 source ./config.env
 
-LOCAL_ARTIFACTS_FOLDER="./target_copy/fxp-net_linux-networking"
-LOCAL_PKG_FILE="./target_copy/fxp-net_linux-networking/fxp-net_linux-networking.pkg"
-LOCAL_CUSTOM_LOAD_FILE="./target_copy/load_custom_pkg.sh"
-LOCAL_ES2K_SKIP_P4_FILE="./target_copy/es2k_skip_p4.conf"
+LOCAL_ARTIFACTS_FOLDER="./target_copy/lnw/fxp-net_linux-networking"
+LOCAL_PKG_FILE="./target_copy/lnw/fxp-net_linux-networking/fxp-net_linux-networking.pkg"
+LOCAL_CUSTOM_LOAD_FILE="./target_copy/lnw/load_custom_pkg.sh"
+LOCAL_ES2K_SKIP_P4_FILE="./target_copy/lnw/es2k_skip_p4.conf"
 LOCAL_ACC_ENV_SETUP_FILE="./target_copy/setup_acc_env.sh"
 
 REMOTE_PATH1_IMC="/work/scripts/"
