@@ -57,20 +57,8 @@ if ! check_machine_up "IMC" $IMC; then
 fi
 
 # Verify values in host config
-printf "Verifying node config on IMC..."
-if ssh $SSH_OPTIONS $IMC "
-    [ -L /etc/dpcp/package/default_pkg.pkg ] && [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp-net_linux-networking.pkg' ] &&
-    grep -q 'sem_num_pages = 28' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'lem_num_pages = 32' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'mod_num_pages = 2' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'cxp_num_pages = 5' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'acc_apf = 16' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -q 'cpf_host = 4' /etc/dpcp/cfg/default_cp_init.cfg &&
-    grep -qP 'comm_vports\s*=\s*\(\(\[5,0\],\[4,0\]\),\(\[0,3\],\[4,3\]\)\)' /etc/dpcp/cfg/default_cp_init.cfg
-"; then
-    echo "Verified for LNW!"
-else
-    echo "Error: Node config required values not found in IMC. Exiting."
+if ! ./verify_host_config.sh; then
+    echo "Error: Node config verification failed. Exiting."
     exit 1
 fi
 
