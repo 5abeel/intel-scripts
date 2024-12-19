@@ -9,7 +9,7 @@ Simply replace Host IP in scripts to `localhost`.
 ## Steps to run in order
 
 1. Upgrade CI image on system under test (SUT)
-2. Copy the LNW artifacts to ./target_copy/fxp-net_linux-networking folder
+2. Copy the LNW artifacts to ./target_copy/fxp-net_linux-networking/fxp-net_linux-networking folder
 3. Update `config.env` to suit your environment and IP addresses
 4. Review `full-bringup` and run script
 
