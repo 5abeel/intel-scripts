@@ -3,8 +3,8 @@
 # Source the environment file
 source ./config.env
 
-# Verify values in host config
-printf "Verifying node config on IMC..."
+# Verify values in node policy
+printf "Verifying node policy on IMC..."
 
 if [ "$PKG_NAME" = "fxp-net_linux-networking" ]; then
     ssh $SSH_OPTIONS $IMC "
@@ -21,7 +21,7 @@ if [ "$PKG_NAME" = "fxp-net_linux-networking" ]; then
         echo "Verified for Linux Networking!"
         exit 0
     else
-        echo "Error: Node config required values not found in IMC for LNW."
+        echo "Error: Node policy required values not found in IMC for LNW."
         exit 1
     fi
 elif [ "$PKG_NAME" = "fxp_connection-tracking" ]; then
@@ -34,7 +34,19 @@ elif [ "$PKG_NAME" = "fxp_connection-tracking" ]; then
         echo "Verified for Connection Tracking!"
         exit 0
     else
-        echo "Error: Node config required values not found in IMC for CT."
+        echo "Error: Node policy required values not found in IMC for CT."
+        exit 1
+    fi
+elif [ "$PKG_NAME" = "default" ]; then
+    ssh $SSH_OPTIONS $IMC "
+        [ -L /etc/dpcp/package/default_pkg.pkg ] && [[ \$(readlink /etc/dpcp/package/default_pkg.pkg) =~ e2100-default-.*\.pkg ]] &&
+        grep -qP 'uplink_vports\\s*=\\s*\\(\\[0,0,0\\],\\[0,1,1\\],\\[4,1,0\\],\\[4,2,1\\],\\[5,1,0\\],\\[5,2,1\\]\\);' /etc/dpcp/cfg/cp_init.cfg
+    "
+    if [ $? -eq 0 ]; then
+        echo "Verified for Default Package!"
+        exit 0
+    else
+        echo "Error: Node policy required values not found in IMC for Default Package."
         exit 1
     fi
 else
