@@ -57,8 +57,8 @@ if ! check_machine_up "IMC" $IMC; then
 fi
 
 # Verify values in host config
-if ! ./verify_host_config.sh; then
-    echo "Error: Node config verification failed. Exiting."
+if ! ./verify_node_policy.sh; then
+    echo "Error: Node policy verification failed. Exiting."
     exit 1
 fi
 
