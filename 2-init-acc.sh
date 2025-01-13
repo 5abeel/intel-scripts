@@ -55,10 +55,29 @@ set_hugepages() {
 }
 
 set_interface_ip() {
+    local interface="enp0s1f0d3"
+    local max_attempts=30
+    local wait_time=2
+
+    printf "Waiting for interface %s to come up..." "$interface"
+
+    for ((i=1; i<=max_attempts; i++)); do
+        if ip link show dev "$interface" &>/dev/null; then
+            printf "OK\n"
+            break
+        fi
+        printf "."
+        sleep $wait_time
+        if [ $i -eq $max_attempts ]; then
+            printf "\nError: Interface %s did not come up after %d seconds\n" "$interface" $((max_attempts * wait_time))
+            return 1
+        fi
+    done
+
     printf "Setting interface IP..."
-    nmcli device set enp0s1f0d3 managed no
-    if ! ip addr show dev enp0s1f0d3 | grep -q "$GRPC_ADDR_IP"; then
-        ip addr add $GRPC_ADDR_IP/24 dev enp0s1f0d3
+    nmcli device set "$interface" managed no
+    if ! ip addr show dev "$interface" | grep -q "$GRPC_ADDR_IP"; then
+        ip addr add "$GRPC_ADDR_IP/24" dev "$interface"
     else
         printf "IP already set. "
     fi
