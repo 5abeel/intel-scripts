@@ -3,7 +3,7 @@
     |                                                                               |
     |  HOST_VF_INTF = 192.168.1.101/24                                              |
     |  (ens801f0v0)                                                                 |
-    |  (VSI 0x1C)                                                                   |
+    |  (VSI 0x1E)                                                                   |
     |       |               -----------------------ACC-------------------           |
     |       |               |                                           |           |
     |       |               |       |==========OVS===========|          |           |
@@ -23,14 +23,14 @@ ip addr add dev ens801f0v0 192.168.1.101/24
 
 
 # On ACC
-HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
-ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
+HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=30 ; HOST_VF_PORT=46
+ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=13 ; ACC_PR1_PORT=29
 
 
 
 echo "HOST_VF - ACC_PR1:"
-echo "HOST_VF_INTF | 0x1c(28)   | 0x2c(44)   | ${HOST_VF_INTF} | 00:1c:00:00:03:14 |"
-echo "ACC_PR1_INTF | 0x0B(11)   | 0x1B(27)   | ${ACC_PR1_INTF} | 00:0b:00:04:03:18 |"
+echo "HOST_VF_INTF | 0x1e(30)   | 0x2e(46)   | ${HOST_VF_INTF} | 00:1e:00:00:03:14 |"
+echo "ACC_PR1_INTF | 0x0D(13)   | 0x1D(29)   | ${ACC_PR1_INTF} | 00:0d:00:04:03:18 |"
  
  
 p4rt-ctl add-entry br0 linux_networking_control.tx_source_port        "vmeta.common.vsi=${HOST_VF_VSI}/2047,priority=1,action=linux_networking_control.set_source_port(${HOST_VF_PORT})"
@@ -40,11 +40,11 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${HOST_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR1_PORT})"
 
  
-ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
+ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=14  ; ACC_PR2_PORT=30
 PHY_PORT=0
 
 echo "ACC_PR2 - PHY_PORT:"
-echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0c:00:05:03:18 |"
+echo "ACC_PR2_INTF | 0x0E(14)   | 0x1E(30)   | ${ACC_PR2_INTF} | 00:0e:00:05:03:18 |"
 echo "ACC_P0  | PHY_PORT=${PHY_PORT}"
  
 p4rt-ctl add-entry br0 linux_networking_control.rx_source_port         "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.set_source_port(${PHY_PORT})"
@@ -97,6 +97,7 @@ ovs-vsctl show
 
 # On LP
 #======
+nmcli device set ens801f0 managed no
 ip addr add dev ens801f0 192.168.1.102/24
 
 ###########################
