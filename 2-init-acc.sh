@@ -110,13 +110,19 @@ check_switchd_status() {
 }
 
 set_pipe() {
-    if [ ! -f /opt/fxp-net_linux-networking/lnp.pb.bin ]; then
-        echo "lnp.pb.bin file not found...creating one"
-        touch /opt/fxp-net_linux-networking/ipu.bin
-        /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/opt/fxp-net_linux-networking/lnp.pb.bin
+    if [ "$PKG_NAME" != "fxp-net_linux-networking" ] && [ "$PKG_NAME" != "fxp_connection-tracking-tcp-udp-icmp" ]; then
+        echo "Error: Unsupported PKG_NAME value: $PKG_NAME"
+        exit 1
     fi
+
+    if [ ! -f /opt/$PKG_NAME/pipe.pb.bin ]; then
+        echo "pipe.pb.bin file not found...creating one"
+        touch /opt/$PKG_NAME/ipu.bin
+        /opt/p4/p4-cp-nws/bin/tdi_pipeline_builder --p4c_conf_file=/usr/share/stratum/es2k/es2k_skip_p4.conf --tdi_pipeline_config_binary_file=/opt/$PKG_NAME/pipe.pb.bin
+    fi
+
     printf "Setting pipe..."
-    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g $GRPC_ADDR_IP:9559 set-pipe br0 /opt/fxp-net_linux-networking/lnp.pb.bin /opt/fxp-net_linux-networking/p4Info.txt
+    /opt/p4/p4-cp-nws/bin/p4rt-ctl -g $GRPC_ADDR_IP:9559 set-pipe br0 /opt/$PKG_NAME/pipe.pb.bin /opt/$PKG_NAME/p4Info.txt
     printf "OK\n"
 }
 
@@ -156,7 +162,7 @@ copy_ipsec_artifacts() {
     printf "Copying P4 artifacts from ACC to host (for ipsec-recipe)..."
     rm -rf /var/tmp/ipsec_fixed_func.pb.bin
     rm -rf /var/tmp/linux_networking.p4info.txt
-    scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/lnp.pb.bin /var/tmp/ipsec_fixed_func.pb.bin
+    scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/pipe.pb.bin /var/tmp/ipsec_fixed_func.pb.bin
     scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/p4Info.txt /var/tmp/linux_networking.p4info.txt
 }
 
@@ -183,6 +189,7 @@ ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     # Export the IP addresses needed for configuration
     export GRPC_ADDR_IP=$GRPC_ADDR_IP
     export HOST_COMMS_IP=$HOST_COMMS_IP
+    export PKG_NAME=$PKG_NAME
 
     check_for_first_run
     set_hugepages
