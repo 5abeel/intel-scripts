@@ -1,10 +1,10 @@
 {
     "program_name": "fxp-net_linux-networking",
-    "build_date": "Fri Nov  8 16:20:55 2024",
-    "compile_command": "/usr/local/bin/p4c-pna-xxp -I /usr/local/share/p4c/p4c_src/../idpf-lib --Wdisable --auto-alloc-objid=on --no-pedantic --context ./artifacts/fxp-net_linux-networking/context.json --tdi ./artifacts/fxp-net_linux-networking/tdi.json --p4runtime-entries-files ./artifacts/fxp-net_linux-networking/entries.json -I /usr/local/share/p4c/p4include -I /usr/local/bin/../lib -I /usr/local/bin/../share/p4c/p4include/idpf -I /usr/local/bin/../share/p4c/p4include -I /usr/local/bin/../share/p4c/idpf-lib --p4v=16 --p4runtime-files ./artifacts/fxp-net_linux-networking/p4Info.txt --pkg-name Sample P4 Program pkg --pkg-version 1.0.73.35 -o artifacts/fxp-net_linux-networking/fxp-net_linux-networking_939746fd97e744208e37e49fce4543b1.s /sdk/build/p4-programs/fxp-net-scenarios/fxp-net_linux-networking/fxp-net_linux-networking.p4",
-    "compiler_version": "3.0.70.128",
+    "build_date": "Fri Jan 10 00:18:29 2025",
+    "compile_command": "/usr/local/bin/p4c-pna-xxp -I /usr/local/share/p4c/p4c_src/../idpf-lib --Wdisable --auto-alloc-objid=on --no-pedantic --context ./artifacts/fxp-net_linux-networking/context.json --tdi ./artifacts/fxp-net_linux-networking/tdi.json --p4runtime-entries-files ./artifacts/fxp-net_linux-networking/entries.json -I /usr/local/share/p4c/p4include -I /usr/local/bin/../lib -I /usr/local/bin/../share/p4c/p4include/idpf -I /usr/local/bin/../share/p4c/p4include -I /usr/local/bin/../share/p4c/idpf-lib --p4v=16 --p4runtime-files ./artifacts/fxp-net_linux-networking/p4Info.txt --pkg-name Sample P4 Program pkg --pkg-version 1.0.73.35 -o artifacts/fxp-net_linux-networking/fxp-net_linux-networking_536b6698b82c4e4696aeb69c657bd746.s /sdk/build/p4-programs/fxp-net-scenarios/fxp-net_linux-networking/fxp-net_linux-networking.p4",
+    "compiler_version": "3.0.70.130",
     "schema_version": "1.0.0",
-    "run_id": "124118161719",
+    "run_id": "12511001519",
     "target": "MEV",
     "global_configs": {
         "hardware_blocks": [
@@ -8064,7 +8064,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "SET1B_24b",
-                                        "index": 1,
+                                        "index": 2,
                                         "setmd_action_code": "SET_16b",
                                         "parameters": [
                                             {
@@ -8089,7 +8089,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "SET1B_24b",
-                                        "index": 2,
+                                        "index": 3,
                                         "setmd_action_code": "SET_32b_AUX",
                                         "parameters": [
                                             {
@@ -8105,14 +8105,14 @@
                                     {
                                         "prec": 7,
                                         "action_code": "AUX_DATA",
-                                        "index": 2,
+                                        "index": 3,
                                         "type_id": 4,
                                         "offset": 10
                                     },
                                     {
                                         "prec": 7,
                                         "action_code": "SET1B_24b",
-                                        "index": 3,
+                                        "index": 0,
                                         "setmd_action_code": "SET_16b_AUX",
                                         "parameters": [
                                             {
@@ -8129,7 +8129,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "AUX_DATA",
-                                        "index": 3,
+                                        "index": 0,
                                         "mask": 7,
                                         "type_id": 5,
                                         "offset": 5
@@ -8172,7 +8172,7 @@
                                         "action_code": "SET1B_24b",
                                         "encoding_grp": 8,
                                         "encoding_port": "VSI",
-                                        "index": 0,
+                                        "index": 1,
                                         "setmd_action_code": "SET_8b",
                                         "value": 2,
                                         "mask": 2,
@@ -8361,7 +8361,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "SET1B_24b",
-                                        "index": 1,
+                                        "index": 0,
                                         "setmd_action_code": "SET_16b_AUX",
                                         "parameters": [
                                             {
@@ -8378,7 +8378,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "AUX_DATA",
-                                        "index": 1,
+                                        "index": 0,
                                         "mask": 7,
                                         "type_id": 5,
                                         "offset": 5
@@ -8429,7 +8429,7 @@
                                         "action_code": "SET1B_24b",
                                         "encoding_grp": 10,
                                         "encoding_port": "VSI",
-                                        "index": 0,
+                                        "index": 1,
                                         "setmd_action_code": "SET_8b",
                                         "value": 2,
                                         "mask": 2,
@@ -8463,7 +8463,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "SET1B_24b",
-                                        "index": 0,
+                                        "index": 2,
                                         "setmd_action_code": "SET_8b_AUX",
                                         "value": 192,
                                         "mask": 192
@@ -8471,7 +8471,7 @@
                                     {
                                         "prec": 7,
                                         "action_code": "AUX_DATA",
-                                        "index": 0,
+                                        "index": 2,
                                         "type_id": 0,
                                         "offset": 27
                                     }

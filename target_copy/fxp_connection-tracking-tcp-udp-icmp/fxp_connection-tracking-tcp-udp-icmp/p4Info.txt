@@ -1,0 +1,343 @@
+pkg_info {
+  arch: "pna"
+}
+tables {
+  preamble {
+    id: 43744224
+    name: "pna_connection_track_control.set_ct_options"
+    alias: "set_ct_options"
+  }
+  match_fields {
+    id: 1
+    name: "hdrs.tcp.syn"
+    bitwidth: 1
+    match_type: TERNARY
+  }
+  match_fields {
+    id: 2
+    name: "hdrs.tcp.fin"
+    bitwidth: 1
+    match_type: TERNARY
+  }
+  match_fields {
+    id: 3
+    name: "hdrs.tcp.rst"
+    bitwidth: 1
+    match_type: TERNARY
+  }
+  action_refs {
+    id: 32073125
+  }
+  action_refs {
+    id: 25191370
+  }
+  action_refs {
+    id: 21747855
+  }
+  const_default_action_id: 21747855
+  size: 1024
+}
+tables {
+  preamble {
+    id: 40151758
+    name: "pna_connection_track_control.ct_tcp_table"
+    alias: "ct_tcp_table"
+  }
+  match_fields {
+    id: 1
+    name: "ipv4_addr_0"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "ipv4_addr_1"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "hdrs.ipv4[vmeta.common.depth].protocol"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "tcp_port_0"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "tcp_port_1"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  action_refs {
+    id: 26692838
+    annotations: "@tableonly"
+    scope: TABLE_ONLY
+  }
+  action_refs {
+    id: 28780999
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  action_refs {
+    id: 21257015
+  }
+  const_default_action_id: 28780999
+  size: 1024
+}
+tables {
+  preamble {
+    id: 47771791
+    name: "pna_connection_track_control.set_udp_ct_options"
+    alias: "set_udp_ct_options"
+  }
+  match_fields {
+    id: 1
+    name: "istd.direction"
+    bitwidth: 1
+    match_type: TERNARY
+  }
+  action_refs {
+    id: 18757847
+  }
+  action_refs {
+    id: 23481938
+  }
+  const_default_action_id: 23481938
+  size: 1024
+}
+tables {
+  preamble {
+    id: 35759217
+    name: "pna_connection_track_control.ct_udp_table"
+    alias: "ct_udp_table"
+  }
+  match_fields {
+    id: 1
+    name: "ipv4_addr_0"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "ipv4_addr_1"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "hdrs.ipv4[vmeta.common.depth].protocol"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "udp_port_0"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "udp_port_1"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  action_refs {
+    id: 22659264
+    annotations: "@tableonly"
+    scope: TABLE_ONLY
+  }
+  action_refs {
+    id: 24622278
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  action_refs {
+    id: 21257015
+  }
+  const_default_action_id: 24622278
+  size: 1024
+}
+tables {
+  preamble {
+    id: 45438729
+    name: "pna_connection_track_control.set_icmp_ct_options"
+    alias: "set_icmp_ct_options"
+  }
+  match_fields {
+    id: 1
+    name: "istd.direction"
+    bitwidth: 1
+    match_type: TERNARY
+  }
+  action_refs {
+    id: 22263351
+  }
+  action_refs {
+    id: 33261827
+  }
+  const_default_action_id: 33261827
+  size: 1024
+}
+tables {
+  preamble {
+    id: 43292511
+    name: "pna_connection_track_control.ct_icmp_table"
+    alias: "ct_icmp_table"
+  }
+  match_fields {
+    id: 1
+    name: "ipv4_addr_0"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "ipv4_addr_1"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "hdrs.ipv4[vmeta.common.depth].protocol"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "hdrs.icmp.v4.identifier"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  action_refs {
+    id: 19591952
+    annotations: "@tableonly"
+    scope: TABLE_ONLY
+  }
+  action_refs {
+    id: 20846650
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  action_refs {
+    id: 21257015
+  }
+  const_default_action_id: 20846650
+  size: 1024
+}
+actions {
+  preamble {
+    id: 21257015
+    name: "NoAction"
+    alias: "NoAction"
+  }
+}
+actions {
+  preamble {
+    id: 32073125
+    name: "pna_connection_track_control.tcp_syn_packet"
+    alias: "tcp_syn_packet"
+  }
+}
+actions {
+  preamble {
+    id: 25191370
+    name: "pna_connection_track_control.tcp_fin_or_rst_packet"
+    alias: "tcp_fin_or_rst_packet"
+  }
+}
+actions {
+  preamble {
+    id: 21747855
+    name: "pna_connection_track_control.tcp_other_packets"
+    alias: "tcp_other_packets"
+  }
+}
+actions {
+  preamble {
+    id: 26692838
+    name: "pna_connection_track_control.ct_tcp_table_hit"
+    alias: "ct_tcp_table_hit"
+  }
+}
+actions {
+  preamble {
+    id: 28780999
+    name: "pna_connection_track_control.ct_tcp_table_miss"
+    alias: "ct_tcp_table_miss"
+  }
+}
+actions {
+  preamble {
+    id: 18757847
+    name: "pna_connection_track_control.new_conn_udp_packets"
+    alias: "new_conn_udp_packets"
+  }
+}
+actions {
+  preamble {
+    id: 23481938
+    name: "pna_connection_track_control.other_udp_packets"
+    alias: "other_udp_packets"
+  }
+}
+actions {
+  preamble {
+    id: 22659264
+    name: "pna_connection_track_control.ct_udp_table_hit"
+    alias: "ct_udp_table_hit"
+  }
+}
+actions {
+  preamble {
+    id: 24622278
+    name: "pna_connection_track_control.ct_udp_table_miss"
+    alias: "ct_udp_table_miss"
+  }
+}
+actions {
+  preamble {
+    id: 22263351
+    name: "pna_connection_track_control.new_conn_icmp_packets"
+    alias: "new_conn_icmp_packets"
+  }
+}
+actions {
+  preamble {
+    id: 33261827
+    name: "pna_connection_track_control.other_icmp_packets"
+    alias: "other_icmp_packets"
+  }
+}
+actions {
+  preamble {
+    id: 19591952
+    name: "pna_connection_track_control.ct_icmp_table_hit"
+    alias: "ct_icmp_table_hit"
+  }
+}
+actions {
+  preamble {
+    id: 20846650
+    name: "pna_connection_track_control.ct_icmp_table_miss"
+    alias: "ct_icmp_table_miss"
+  }
+}
+actions {
+  preamble {
+    id: 19290361
+    name: "pna_connection_track_control.send_rss_queue"
+    alias: "send_rss_queue"
+  }
+  params {
+    id: 1
+    name: "q_id"
+    bitwidth: 16
+  }
+}
+type_info {
+}
