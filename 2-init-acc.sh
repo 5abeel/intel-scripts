@@ -110,11 +110,6 @@ check_switchd_status() {
 }
 
 set_pipe() {
-    if [ "$PKG_NAME" != "fxp-net_linux-networking" ] && [ "$PKG_NAME" != "fxp_connection-tracking-tcp-udp-icmp" ]; then
-        echo "Error: Unsupported PKG_NAME value: $PKG_NAME"
-        exit 1
-    fi
-
     if [ ! -f /opt/$PKG_NAME/pipe.pb.bin ]; then
         echo "pipe.pb.bin file not found...creating one"
         touch /opt/$PKG_NAME/ipu.bin

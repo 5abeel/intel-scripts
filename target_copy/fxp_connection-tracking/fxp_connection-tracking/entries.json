@@ -1,0 +1,133 @@
+{
+ "deviceId": "0",
+ "roleId": "0",
+ "updates": [
+  {
+   "type": "INSERT",
+   "entity": {
+    "tableEntry": {
+     "tableId": 43744224,
+     "match": [
+      {
+       "fieldId": 1,
+       "ternary": {
+        "fieldValue": "1",
+        "fieldMask": "1"
+       }
+      },
+      {
+       "fieldId": 2,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      },
+      {
+       "fieldId": 3,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      }
+     ],
+     "action": {
+      "action": {
+       "actionId": 32073125,
+       "params": []
+      }
+     },
+     "priority": 3,
+     "controllerMetadata": "0",
+     "isDefaultAction": false,
+     "idleTimeoutNs": "0",
+     "metadata": ""
+    }
+   }
+  },
+  {
+   "type": "INSERT",
+   "entity": {
+    "tableEntry": {
+     "tableId": 43744224,
+     "match": [
+      {
+       "fieldId": 1,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      },
+      {
+       "fieldId": 2,
+       "ternary": {
+        "fieldValue": "1",
+        "fieldMask": "1"
+       }
+      },
+      {
+       "fieldId": 3,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      }
+     ],
+     "action": {
+      "action": {
+       "actionId": 25191370,
+       "params": []
+      }
+     },
+     "priority": 2,
+     "controllerMetadata": "0",
+     "isDefaultAction": false,
+     "idleTimeoutNs": "0",
+     "metadata": ""
+    }
+   }
+  },
+  {
+   "type": "INSERT",
+   "entity": {
+    "tableEntry": {
+     "tableId": 43744224,
+     "match": [
+      {
+       "fieldId": 1,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      },
+      {
+       "fieldId": 2,
+       "ternary": {
+        "fieldValue": "0",
+        "fieldMask": "0"
+       }
+      },
+      {
+       "fieldId": 3,
+       "ternary": {
+        "fieldValue": "1",
+        "fieldMask": "1"
+       }
+      }
+     ],
+     "action": {
+      "action": {
+       "actionId": 25191370,
+       "params": []
+      }
+     },
+     "priority": 1,
+     "controllerMetadata": "0",
+     "isDefaultAction": false,
+     "idleTimeoutNs": "0",
+     "metadata": ""
+    }
+   }
+  }
+ ],
+ "atomicity": "CONTINUE_ON_ERROR"
+}
