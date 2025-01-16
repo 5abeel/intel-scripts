@@ -74,7 +74,7 @@ set_interface_ip() {
         fi
     done
 
-    printf "Setting interface IP..."
+    printf "Setting interface ($interface = $GRPC_ADDR_IP)..."
     nmcli device set "$interface" managed no
     if ! ip addr show dev "$interface" | grep -q "$GRPC_ADDR_IP"; then
         ip addr add "$GRPC_ADDR_IP/24" dev "$interface"
