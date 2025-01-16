@@ -24,11 +24,9 @@ if [ "$PKG_NAME" = "fxp-net_linux-networking" ]; then
         echo "Error: Node policy required values not found in IMC for LNW."
         exit 1
     fi
-elif [ "$PKG_NAME" = "fxp_connection-tracking-tcp-udp-icmp" ] || [ "$PKG_NAME" = "fxp_connection-tracking" ]; then
+elif [ "$PKG_NAME" = "fxp_connection-tracking" ]; then
     ssh $SSH_OPTIONS $IMC "
-        [ -L /etc/dpcp/package/default_pkg.pkg ] && 
-        ([ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp_connection-tracking-tcp-udp-icmp.pkg' ] || 
-         [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp_connection-tracking.pkg' ]) &&
+        [ -L /etc/dpcp/package/default_pkg.pkg ] && [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp_connection-tracking.pkg' ] &&
         grep -q 'lem_aging_num_pages = 3' /etc/dpcp/cfg/default_cp_init.cfg &&
         grep -qP 'comm_vports\\s*=\\s*\\(\\(\\[5,0\\],\\[4,0\\]\\),\\(\\[0,3\\],\\[4,3\\]\\)\\)' /etc/dpcp/cfg/default_cp_init.cfg
     "
