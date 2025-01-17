@@ -4,12 +4,19 @@
 # Review config.env before running for environment details
 
 # 1. Reboot IMC/ACC + setup LNP from target_copy folder
-./1-setup-imc-acc.sh
 
+if ! ./1-setup-imc-acc.sh; then
+    echo " >>> 1-setup-imc-acc.sh exited with error status. Correct errors before proceeding. Stopping full-bringup."
+    exit 1
+fi
 echo "================= 1-setup-imc-acc.sh completed ============"
-# 2. Init ACC, start infrap4d, set-pipe and start IDPF driver on host
-./2-init-acc.sh
 
+# 2. Init ACC, start infrap4d, set-pipe and start IDPF driver on host
+
+if ! ./2-init-acc.sh; then
+    echo " >>> ./2-init-acc.sh exited with error status. Correct errors before proceeding. Stopping full-bringup."
+    exit 1
+fi
 echo "================= 2-init-acc.sh completed ================="
 
 # 3. Program p4 tables, run OVS and setup networking
