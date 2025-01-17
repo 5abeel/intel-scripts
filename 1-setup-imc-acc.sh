@@ -40,7 +40,7 @@ done
 echo "Deleting old artifacts on ACC..."
 ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC 'rm -rf $REMOTE_PATH1_ACC/$REMOTE_ACC_PKG_NAME'"
 
-# Copy files to IMC is not "default"
+# Copy files to IMC is not "default pkg"
 if [ "$PKG_NAME" != "default" ]; then
     echo "Copying files to IMC..."
     scp $SSH_OPTIONS $LOCAL_PKG_FILE $LOCAL_CUSTOM_LOAD_FILE $IMC:$REMOTE_PATH1_IMC

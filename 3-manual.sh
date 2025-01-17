@@ -143,7 +143,7 @@ ip link add dev TEP10 type dummy
 sleep 1
 ifconfig TEP10 10.1.1.1/24 up
 sleep 2
-ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
+ip route replace 10.1.1.0/24 via 1.1.1.2 dev br-tunl
 
 
 # On LP
@@ -167,7 +167,7 @@ ip addr show vxlan10
 
 ifconfig ${CVL_INTF} 1.1.1.2/24 up
 sleep 2
-ip route change 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
+ip route replace 10.1.1.0/24 via 1.1.1.1 dev ${CVL_INTF}
 ip addr show ${CVL_INTF}
 
 
