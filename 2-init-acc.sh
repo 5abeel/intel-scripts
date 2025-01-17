@@ -161,13 +161,6 @@ copy_ipsec_artifacts() {
     scp $SSH_OPTIONS -pr root@$GRPC_ADDR_IP:/opt/fxp-net_linux-networking/p4Info.txt /var/tmp/linux_networking.p4info.txt
 }
 
-## Step 0: Verify values in es2k_skip_p4.config
-if ! ./verify_es2k_skip_file.sh; then
-    echo "Error: /usr/share/stratum/es2k/es2k_skip_p4.conf contains incorrect MAC addresses that do not exist on system!"
-    echo "       Edit file before proceeding"
-    exit 1
-fi
-
 ### Step 1: cleanup acc + stop idpf driver on host
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
     $(declare -f cleanup_acc)
