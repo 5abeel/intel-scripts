@@ -58,7 +58,7 @@ ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC '
 '"
 
 if [ $? -eq 0 ]; then
-    echo "All MAC addresses verified on ACC!"
+    echo "All MAC addresses verified on ACC to match es2k_skip_p4.conf contents!"
     exit 0
 else
     echo "Error: Some MAC addresses not found on ACC."
