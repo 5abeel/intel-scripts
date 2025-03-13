@@ -23,7 +23,7 @@ while true; do
     for interface in "${interfaces[@]}"; do
         if ! check_interface "$interface"; then
             all_up=false
-            printf "\nWaiting for $interface to be up on ACC..."
+            printf "\nWaiting for $interface to come up on ACC..."
             break
         fi
     done

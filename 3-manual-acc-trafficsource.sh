@@ -1,25 +1,26 @@
 
 
-            HOST                                    ACC                                                                                      Link Partner
-============================          ==================================================                                            ============================
+        ACC                                                                                      Link Partner
+==================================================                                            ============================
 
-HOST_VF_INTF (ens801f0v0)----------PR------> ACC_PR1_INTF (enp0s1f0d4)--------------
-    VSI (0x1C)                                      VSI (0x0B)                          
-192.168.1.101/24                                        |
-                                                        |
-                                                        |                           
-                                                  ================OVS================
-                                                    br-intrnl-------------br-tunl--
-                                                (TEP/vxlan 10.1.1.1)    (1.1.1.1)
-                                                  =========================|=========
-                                                        |                  |---- ACC_PR2_INTF -----PR----> PHY_PORT 0 ====================== ens801f0         TEP10             vxlan10
-                                                        |                        (enp0s1f0d5)                                               1.1.1.2 --------- 10.1.1.2 ----- 192.168.1.102
-                                                        |                          (0x0C)                                                                                       |
-                                                        |                                                                                                                       |
-IPSEC_VF_INTF (ens801f0v2)---------PR-------> ACC_PR3_INTF (enp0s1f0d6)                                                                                                         |
-    VSI (0x1E)                                      VSI (0x0D)                                                                                                          IPSECAPP (type dummy)
-   11.0.0.1/24                                                                                                                                                              11.0.0.2
+    enp0s1f0d8
+    VSI (0x11) 192.168.1.101/24
+        |
+        |
 
+    ACC_PR1_INTF (enp0s1f0d4)
+    VSI (0x0B)
+        |
+        |
+        |                         
+    ================OVS================
+        br-intrnl-------------br-tunl--
+    (TEP/vxlan 10.1.1.1)    (1.1.1.1)
+    =========================|=========
+                             |
+                             |---- ACC_PR2_INTF -----PR----> PHY_PORT 0 ====================== ens801f0         TEP10             vxlan10
+                                    (enp0s1f0d5)                                               1.1.1.2 --------- 10.1.1.2 ----- 192.168.1.102
+                                    (0x0C)                                                                                       
 
 
 
@@ -51,22 +52,17 @@ ifconfig IPSECAPP 11.0.0.2/24 up
 ip route change 11.0.0.0/24 dev vxlan10 # if this fails, use 'ip route add' instead
 
 
-
 # For VXLAN + IPsec tunnel mode --> need to set IPSECAPP interface to lower MTU size
-# On host
+# On LP
 ip link set dev IPSECAPP mtu 1400
 
 
 # On ACC
 # ======
 
-HOST_VF_INTF=ens801f0v0 ; HOST_VF_VSI=28 ; HOST_VF_PORT=44
-ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=11 ; ACC_PR1_PORT=27
+HOST_VF_INTF=enp0s1f0d8 ; HOST_VF_VSI=17 ; HOST_VF_PORT=33
+ACC_PR1_INTF=enp0s1f0d4 ; ACC_PR1_VSI=13 ; ACC_PR1_PORT=29
 
-echo "HOST_VF - ACC_PR1:"
-echo "HOST_VF_INTF | 0x1c(28)   | 0x2c(44)   | ${HOST_VF_INTF} | 00:1c:00:00:03:14 |"
-echo "ACC_PR1_INTF | 0x0B(11)   | 0x1B(27)   | ${ACC_PR1_INTF} | 00:0b:00:04:03:18 |"
- 
 p4rt-ctl add-entry br0 linux_networking_control.tx_source_port        "vmeta.common.vsi=${HOST_VF_VSI}/2047,priority=1,action=linux_networking_control.set_source_port(${HOST_VF_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi            "vmeta.common.vsi=${ACC_PR1_VSI},zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(${HOST_VF_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.common.vsi=${ACC_PR1_VSI},target_vsi=${HOST_VF_VSI},action=linux_networking_control.fwd_to_vsi(${HOST_VF_PORT})"
@@ -74,13 +70,9 @@ p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.com
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${HOST_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR1_PORT})"
 
  
-ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=12  ; ACC_PR2_PORT=28
+ACC_PR2_INTF=enp0s1f0d5  ; ACC_PR2_VSI=14  ; ACC_PR2_PORT=30
 PHY_PORT=0
 
-echo "ACC_PR2 - PHY_PORT:"
-echo "ACC_PR2_INTF | 0x0C(12)   | 0x1C(28)   | ${ACC_PR2_INTF} | 00:0f:00:05:03:18 |"
-echo "ACC_P0  | PHY_PORT=${PHY_PORT}"
- 
 p4rt-ctl add-entry br0 linux_networking_control.rx_source_port         "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.set_source_port(${PHY_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.rx_phy_port_to_pr_map  "vmeta.common.port_id=${PHY_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR2_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map  "user_meta.cmeta.source_port=${PHY_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR2_PORT})"
@@ -100,44 +92,14 @@ p4rt-ctl add-entry br0 linux_networking_control.tx_lag_table "user_meta.cmeta.la
 
 # For IPsec tunnel mode
 
-IPSEC_VF_INTF=ens801f0v1 ; IPSEC_VF_VSI=29 ; IPSEC_VF_PORT=45
-ACC_PR3_INTF=enp0s1f0d6 ; ACC_PR3_VSI=13 ; ACC_PR3_PORT=29
+IPSEC_VF_INTF=enp0s1f0d9 ; IPSEC_VF_VSI=18 ; IPSEC_VF_PORT=34
+ACC_PR3_INTF=enp0s1f0d6 ; ACC_PR3_VSI=15 ; ACC_PR3_PORT=31
 
-echo "IPSEC_VF - ACC_PR1:"
-echo "IPSEC_VF_INTF | 0x1d(29)   | 0x2d(45)   | ${IPSEC_VF_INTF} | 00:1d:00:00:03:14 |"
-echo "ACC_PR3_VSI   | 0x0d(13)   | 0x1D(29)   | ${ACC_PR3_INTF}  | 00:0d:00:04:03:18 |"
- 
 p4rt-ctl add-entry br0 linux_networking_control.tx_source_port        "vmeta.common.vsi=${IPSEC_VF_VSI}/2047,priority=1,action=linux_networking_control.set_source_port(${IPSEC_VF_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.tx_acc_vsi            "vmeta.common.vsi=${ACC_PR3_VSI},zero_padding=0,action=linux_networking_control.l2_fwd_and_bypass_bridge(${IPSEC_VF_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.common.vsi=${ACC_PR3_VSI},target_vsi=${IPSEC_VF_VSI},action=linux_networking_control.fwd_to_vsi(${IPSEC_VF_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.vsi_to_vsi_loopback   "vmeta.common.vsi=${IPSEC_VF_VSI},target_vsi=${ACC_PR3_VSI},action=linux_networking_control.fwd_to_vsi(${ACC_PR3_PORT})"
 p4rt-ctl add-entry br0 linux_networking_control.source_port_to_pr_map "user_meta.cmeta.source_port=${IPSEC_VF_PORT},zero_padding=0,action=linux_networking_control.fwd_to_vsi(${ACC_PR3_PORT})"
-
-
-# Add routing interface and add to nexthop table
-
-# HOST_VF_INTF : ens801f0v0 : 00:1c:00:00:03:14 <-- 192.168.1.101 MAC address
- 
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_start \
-    "rif_mod_map_id0=0x0005,action=linux_networking_control.set_src_mac_start(arg=0x001c)"
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_mid \
-    "rif_mod_map_id1=0x0005,action=linux_networking_control.set_src_mac_mid(arg=0x0000)"
-p4rt-ctl add-entry br0 linux_networking_control.rif_mod_table_last \
-    "rif_mod_map_id2=0x0005,action=linux_networking_control.set_src_mac_last(arg=0x0314)"
- 
-# table nexthop_table - Add router interface (0x05)
- 
-# CVL_HOST - nexthop - use LP's 192.168.1.102 interface MAC address
-# if running non-vxlan, this will be the ens801f0 (phy) mac address. if using vxlan tunneling, this should be the vxlan10 MAC address
-# ens801f0         UP             6c:fe:54:47:44:70 <-- LP MAC 192.168.1.102                                                               
-# vxlan10          UP             ee:35:eb:f9:2f:2b <-- LP vxlan10 MAC address for 192.168.1.102
-p4rt-ctl add-entry br0 linux_networking_control.nexthop_table \
-    "user_meta.cmeta.nexthop_id=4,bit16_zeros=0,action=linux_networking_control.set_nexthop_info_dmac(router_interface_id=0x5,egress_port=0,dmac_high=0xee35,dmac_low=0xebf92f2b)"
- 
-# Add to ipv4_table <-- entry for IPsec tunnel routing lookup
-# dst_match=0xc0a80166 = 192.168.1.102
-p4rt-ctl add-entry br0 linux_networking_control.ipv4_table \
-    "ipv4_table_lpm_root=0,ipv4_dst_match=0xc0a80166/24,action=linux_networking_control.ipv4_set_nexthop_id(nexthop_id=0x4)"
 
 
 export RUN_OVS=/opt/p4/p4-cp-nws
@@ -186,12 +148,16 @@ sleep 2
 ip route change 10.1.1.0/24 via 1.1.1.2 dev br-tunl
 
 
+# set ip for traffic source
+nmcli device set $HOST_VF_INTF managed no
+ip addr add dev $HOST_VF_INTF 192.168.1.101/24
 
-# On Host
-# =======
+# For IPsec tunnel mode
+nmcli device set $IPSEC_VF_INTF managed no
+ip addr add dev $IPSEC_VF_INTF 11.0.0.1/24
 
-ip addr add dev ens801f0v0 192.168.1.101/24
-ip addr add dev ens801f0v1 11.0.0.1/24
+# set lower MTU size for IPsec tunnel mode
+ip link set dev $IPSEC_VF_INTF mtu 1400
 
 
 # Cleanup LP
