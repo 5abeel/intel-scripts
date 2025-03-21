@@ -121,9 +121,9 @@ echo "Running vfio_bind on ACC to get pcie_bdf and iommu_grp_number..."
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" $ACC "modprobe vfio-pci && /opt/p4/p4sde/bin/vfio_bind.sh 8086:1453"
 
 
-## Verify values in es2k_skip_p4.config
-if ! ./verify_es2k_skip_file.sh; then
-    echo "Error: /usr/share/stratum/es2k/es2k_skip_p4.conf contains incorrect MAC addresses that do not exist on system!"
+## updates MAC addresses in es2k_skip_p4.conf
+if ! ./update_es2k_skip_file.sh; then
+    echo "Error: /usr/share/stratum/es2k/es2k_skip_p4.conf contains incorrect MAC addresses!"
     echo "       Edit file before proceeding"
     exit 1
 fi
