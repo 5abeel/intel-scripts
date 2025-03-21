@@ -1,4 +1,4 @@
-# Scripts to setup LNWv3
+# Scripts to setup LNW
 
 This script assumes ConfigL setup and the scripts in this repo to run on the LP.
 
