@@ -79,7 +79,7 @@ ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC '
 
 if [ $? -eq 0 ]; then
     echo "es2k_skip_p4.conf file updated successfully!"
-    echo " >>> Use enp0s1f0d4, enp0s1f0d5, enp0s1f0d4 as PRs for networking setup"
+    echo " >>> Use enp0s1f0d4, enp0s1f0d5, enp0s1f0d6 as PRs for networking setup"
     exit 0
 else
     echo "Error: Failed to update es2k_skip_p4.conf file."
