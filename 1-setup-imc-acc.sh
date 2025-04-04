@@ -3,6 +3,27 @@
 # Source the environment file
 source ./config.env
 
+# Validation of config.env: Check IMC's /etc/issue.net against CI_NUM in config.env
+echo "Validating CI_NUM in config.env against IMC's /etc/issue.net..."
+IMC_ISSUE=$(ssh $SSH_OPTIONS $IMC "cat /etc/issue.net")
+if [[ $IMC_ISSUE =~ (release\.[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|trunk\.[0-9]+)$ ]]; then
+    IMC_CI_NUM=${BASH_REMATCH[0]}
+    echo "IMC CI version: $IMC_CI_NUM"
+    echo "config.env CI_NUM: $CI_NUM"
+    
+    if [[ "$IMC_CI_NUM" != "$CI_NUM" ]]; then
+        echo "ERROR: CI_NUM mismatch!"
+        echo "Please update CI_NUM in config.env to match IMC version."
+        exit 1
+    else
+        echo "CI_NUM validation passed."
+    fi
+else
+    echo "ERROR: Could not extract CI version from IMC's /etc/issue.net"
+    echo "Content of /etc/issue.net: $IMC_ISSUE"
+    exit 1
+fi
+
 # Run command on host
 echo "Stopping IDPF on host..."
 ssh $SSH_OPTIONS $HOST "rmmod idpf"
