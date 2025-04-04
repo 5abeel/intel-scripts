@@ -35,14 +35,63 @@ stop_idpf() {
     return 0
 }
 
+check_certificate_validity() {
+    local cert_file="$1"
+    local current_time=$(date +%s)
+
+    if [ ! -f "$cert_file" ]; then
+        echo "Certificate file $cert_file not found."
+        return 1
+    fi
+
+    local not_before=$(openssl x509 -in "$cert_file" -noout -startdate | cut -d= -f2)
+    local not_after=$(openssl x509 -in "$cert_file" -noout -enddate | cut -d= -f2)
+
+    not_before_seconds=$(date -d "$not_before" +%s)
+    not_after_seconds=$(date -d "$not_after" +%s)
+
+    if [ $current_time -lt $not_before_seconds ] || [ $current_time -gt $not_after_seconds ]; then
+        echo "Certificate $cert_file is not valid."
+        return 1
+    fi
+
+    return 0
+}
+
 check_for_first_run() {
-    if [ ! -d "/usr/share/stratum/certs" ]; then
-        echo "Certs not found. Generating new certs..."
+    local certs_dir="/usr/share/stratum/certs"
+    local ca_cert="$certs_dir/ca.crt"
+    local stratum_cert="$certs_dir/stratum.crt"
+    local client_cert="$certs_dir/client.crt"
+
+    if [ ! -d "$certs_dir" ]; then
+        echo "Certs folder not found. Generating new certificates..."
         cd /usr/share/stratum
         COMMON_NAME=$GRPC_ADDR_IP ./generate-certs.sh
         cd -
+        return
+    fi
+
+    local regenerate=false
+
+    for cert in "$ca_cert" "$stratum_cert" "$client_cert"; do
+        if ! check_certificate_validity "$cert"; then
+            regenerate=true
+            break
+        fi
+    done
+
+    if $regenerate; then
+        echo "One or more certificates are invalid. Removing certs folder and regenerating..."
+        rm -rf "$certs_dir"
+        cd /usr/share/stratum
+        COMMON_NAME=$GRPC_ADDR_IP ./generate-certs.sh
+        cd -
+    else
+        echo "All certificates are valid."
     fi
 }
+
 
 set_hugepages() {
     printf "Setting hugepages..."
