@@ -19,10 +19,11 @@ Alternative to #4, run each step independently
     - Copies fxp-net_linux-networking.pkg & load_custom_pkg.sh from ./target_copy to IMC and reboots IMC
     - Waits for IMC to come up and verifies the config for LNW
     - Waits for ACC to come up and copies fxp-net_linux-networking from ./target_copy to ACC
-    - Calls 'sync_time' to synchronize time between all systems
+    - Calls 'sync_time' to synchronize time between IMC, ACC, Host and LP
+    - Updates the /usr/share/stratum/es2k/es2k_skip_p4.conf file to put ACC's `enp0s1f0d4`, `enp0s1f0d5`, and `enp0s1f0d6` MAC addresses to be used as PRs
 * Run `./2-init-acc.sh`
     - Stops running infrap4d/ovs processes on ACC, and stops IDPF on host
-    - Generates certs (if not present)
+    - (Re-)generates certs (if not present or expired)
     - Starts infrap4d and waits for switchd to come up
     - Sets forwarding pipeline
     - Starts IDPF driver on host
