@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Prerequisites:
-# 1. The es2k_skip_p4.conf is edited & verified to work
-#    correctly on this hw with correct pcie_bdf number
-# 2. the es2k_skip_p4.conf file has all VSIs with correct MAC address added to
-#    VSI-Group 1
-# 3. LNW artifacts present in /opt/fxp-net_linux-networking folder
-
 # Source the environment file
 source ./config.env
 
