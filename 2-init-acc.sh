@@ -81,7 +81,7 @@ check_for_first_run() {
         COMMON_NAME=$GRPC_ADDR_IP ./generate-certs.sh
         cd -
     else
-        echo "All certificates are valid."
+        echo "Certiticates check >> All certificates are valid!"
     fi
 }
 
@@ -216,6 +216,7 @@ EOF
 
 ### Step 2: start infrap4d, set-pipe on ACC
 ssh $SSH_OPTIONS -o ProxyCommand="ssh $SSH_OPTIONS -W %h:%p $IMC" "$ACC" << EOF
+    $(declare -f check_certificate_validity)
     $(declare -f check_for_first_run)
     $(declare -f set_hugepages)
     $(declare -f set_interface_ip)
