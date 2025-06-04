@@ -11,7 +11,7 @@ interfaces=(
 )
 
 # Interfaces whose MAC addresses we need
-target_interfaces=(enp0s1f0d4 enp0s1f0d5 enp0s1f0d6)
+target_interfaces=(enp0s1f0d4 enp0s1f0d5 enp0s1f0d6 enp0s1f0d7)
 
 # Function to check if an interface is up
 check_interface() {
@@ -47,15 +47,16 @@ ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC '
     MAC_enp0s1f0d4=\$(ip link show enp0s1f0d4 | grep -oE \"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}\" | head -1)
     MAC_enp0s1f0d5=\$(ip link show enp0s1f0d5 | grep -oE \"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}\" | head -1)
     MAC_enp0s1f0d6=\$(ip link show enp0s1f0d6 | grep -oE \"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}\" | head -1)
+    MAC_enp0s1f0d7=\$(ip link show enp0s1f0d7 | grep -oE \"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}\" | head -1)
     
     # Check if all MAC addresses were found
-    if [ -z \"\$MAC_enp0s1f0d4\" ] || [ -z \"\$MAC_enp0s1f0d5\" ] || [ -z \"\$MAC_enp0s1f0d6\" ]; then
+    if [ -z \"\$MAC_enp0s1f0d4\" ] || [ -z \"\$MAC_enp0s1f0d5\" ] || [ -z \"\$MAC_enp0s1f0d6\" ] || [ -z \"\$MAC_enp0s1f0d7\" ]; then
         echo \"Error: Could not retrieve all MAC addresses\"
         exit 1
     fi
     
     # Create new ctrl_map value
-    NEW_CTRL_MAP=\"[\\\"NETDEV\\\",\\\"\$MAC_enp0s1f0d4\\\",\\\"\$MAC_enp0s1f0d5\\\",\\\"\$MAC_enp0s1f0d6\\\",1]\"
+    NEW_CTRL_MAP=\"[\\\"NETDEV\\\",\\\"\$MAC_enp0s1f0d4\\\",\\\"\$MAC_enp0s1f0d5\\\",\\\"\$MAC_enp0s1f0d6\\\",\\\"\$MAC_enp0s1f0d7\\\",1]\"
     
     # Create a temporary file with the updated config
     TMP_FILE=$(mktemp)
@@ -68,7 +69,7 @@ ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC '
         # Move the temporary file to the original location
         mv \$TMP_FILE \$CONFIG_FILE
         echo \"Successfully updated \$CONFIG_FILE with new MAC addresses\"
-        echo \"MAC addresses: \$MAC_enp0s1f0d4, \$MAC_enp0s1f0d5, \$MAC_enp0s1f0d6\"
+        echo \"MAC addresses: \$MAC_enp0s1f0d4, \$MAC_enp0s1f0d5, \$MAC_enp0s1f0d6, \$MAC_enp0s1f0d7\"
         exit 0
     else
         echo \"Error: Generated invalid JSON\"
@@ -79,7 +80,7 @@ ssh $SSH_OPTIONS $IMC "ssh $SSH_OPTIONS $ACC '
 
 if [ $? -eq 0 ]; then
     echo "es2k_skip_p4.conf file updated successfully!"
-    echo " >>> Use enp0s1f0d4, enp0s1f0d5, enp0s1f0d6 as PRs for networking setup"
+    echo " >>> Use enp0s1f0d4, enp0s1f0d5, enp0s1f0d6, enp0s1f0d7 as PRs for networking setup"
     exit 0
 else
     echo "Error: Failed to update es2k_skip_p4.conf file."
