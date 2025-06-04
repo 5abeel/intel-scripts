@@ -22,5 +22,6 @@ echo "================= 2-init-acc.sh completed ================="
 # 3. Program p4 tables, run OVS and setup networking
 #./3-auto.sh
 ./3-auto-vxlan-ipsec-tunnel.sh
+#./3-auto-dual-port-ipsec-tunnel.sh
 
 echo "================= 3-auto.sh completed ====================="
