@@ -1,10 +1,38 @@
 #!/bin/bash
 
+<<COMMENT
+            HOST                                    ACC                                                                                      Link Partner
+============================      =====================================================================================                 =========================================
+
+HOST_VF_INTF (ens801f0v0)------------------------PR------> ACC_PR1_INTF (enp0s1f0d4)
+192.168.1.101                                                   |
+                                                                |
+                                                                |
+IPSEC_VF_INTF (ens801f0v1)--PR---> ACC_PR3_INTF (enp0s1f0d6)    |
+11.0.0.1                                                |       |       |---ACC_PR2_INTF (enp0s1f0d5)---PR--> PHY_PORT 0 ==================== ens801f0 ---------------IPSECAPP
+                                                        |       |       |                                       |                             192.168.1.102             11.0.0.2
+                                            ==================OVS================================
+                                                br-intnl (enp0s1f0d4, enp0s1f0d5, enp0s1f0d6)
+
+
+                                                br-intrnl-2 (enp0s1f0d7, enp0s1f0d8, enp0s1f0d9)
+                                            =====================================================
+                                                        |       |       |
+                                                        |       |       |--ACC_PR5_INTF (enp0s1f0d8)---PR--> PHY_PORT 1 ==================== ens801f1 ---------------IPSECAPP_2
+IPSEC_VF_INTF_2 (ens801f0v3)--PR---> ACC_PR6_INTF (enp0s1f0d9)  |                                                                            172.16.1.2                 22.0.0.2
+22.0.0.1                                                        |
+                                                                |
+                                                                |
+HOST_VF_INTF_2 (ens801f0v2)------------------------PR------> ACC_PR4_INTF (enp0s1f0d7)
+172.16.1.1
+
+COMMENT
+
 # Source the environment file where IPs are defined
 source ./config.env
 
 echo "Starting 3-auto-dual-port-ipsec-tunnel.sh..."
-echo ">>> Note: No support for VXLAN. Mode in config.env is ignored in this script"
+echo "Note: No support for VXLAN. Mode in config.env is ignored in this script"
 
 get_mac_address() {
     local interface=$1
