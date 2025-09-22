@@ -24,17 +24,18 @@ if [ "$PKG_NAME" = "fxp-net_linux-networking" ]; then
         echo "Error: Node policy required values not found in IMC for LNW."
         exit 1
     fi
-elif [ "$PKG_NAME" = "fxp_connection-tracking" ]; then
+elif [ "$PKG_NAME" = "l2-fwd_sem" ]; then
     ssh $SSH_OPTIONS $IMC "
-        [ -L /etc/dpcp/package/default_pkg.pkg ] && [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/fxp_connection-tracking.pkg' ] &&
-        grep -q 'lem_aging_num_pages = 3' /etc/dpcp/cfg/default_cp_init.cfg &&
+        [ -L /etc/dpcp/package/default_pkg.pkg ] && [ \$(readlink /etc/dpcp/package/default_pkg.pkg) = '/etc/dpcp/package/l2-fwd_sem.pkg' ] &&
+        grep -q 'acc_apf = 16' /etc/dpcp/cfg/default_cp_init.cfg &&
+        grep -q 'cpf_host = 4' /etc/dpcp/cfg/default_cp_init.cfg &&
         grep -qP 'comm_vports\\s*=\\s*\\(\\(\\[5,0\\],\\[4,0\\]\\),\\(\\[0,3\\],\\[4,3\\]\\)\\)' /etc/dpcp/cfg/default_cp_init.cfg
     "
     if [ $? -eq 0 ]; then
-        echo "Verified for Connection Tracking!"
+        echo "Verified for L2-Fwd-SEM!"
         exit 0
     else
-        echo "Error: Node policy required values not found in IMC for CT."
+        echo "Error: Node policy required values not found in IMC for L2-Fwd-SEM."
         exit 1
     fi
 elif [ "$PKG_NAME" = "default" ]; then

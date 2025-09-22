@@ -1,0 +1,109 @@
+pkg_info {
+  arch: "pna"
+}
+tables {
+  preamble {
+    id: 45332647
+    name: "my_control.i_fwd"
+    alias: "i_fwd"
+  }
+  match_fields {
+    id: 1
+    name: "hdrs.mac[vmeta.common.depth].da"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdrs.mac[vmeta.common.depth].sa"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  action_refs {
+    id: 23557830
+  }
+  action_refs {
+    id: 18440128
+  }
+  const_default_action_id: 23557830
+  size: 1024
+}
+tables {
+  preamble {
+    id: 47675793
+    name: "my_control.e_fwd"
+    alias: "e_fwd"
+  }
+  match_fields {
+    id: 1
+    name: "hdrs.mac[vmeta.common.depth].da"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdrs.mac[vmeta.common.depth].sa"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  action_refs {
+    id: 23557830
+  }
+  action_refs {
+    id: 18440128
+  }
+  const_default_action_id: 23557830
+  size: 1024
+}
+actions {
+  preamble {
+    id: 21257015
+    name: "NoAction"
+    alias: "NoAction"
+  }
+}
+actions {
+  preamble {
+    id: 23557830
+    name: "my_control.drop"
+    alias: "drop"
+  }
+}
+actions {
+  preamble {
+    id: 18440128
+    name: "my_control.send"
+    alias: "send"
+  }
+  params {
+    id: 1
+    name: "port"
+    bitwidth: 32
+    type_name {
+      name: "PortId_t"
+    }
+  }
+}
+actions {
+  preamble {
+    id: 20977426
+    name: "my_control.send_queue"
+    alias: "send_queue"
+  }
+  params {
+    id: 1
+    name: "q_id"
+    bitwidth: 16
+  }
+}
+type_info {
+  new_types {
+    key: "PortId_t"
+    value {
+      translated_type {
+        uri: "p4.org/pna/v1/PortId_t"
+        sdn_bitwidth: 32
+      }
+    }
+  }
+}
