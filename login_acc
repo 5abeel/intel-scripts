@@ -1,5 +1,31 @@
 #!/bin/bash
 
-ssh -t root@100.0.0.100 '
-   ssh -t root@192.168.0.2
-'
+HOST1="100.0.0.100"
+HOST2="192.168.0.2"
+USER="root"
+KNOWN_HOSTS="/root/.ssh/known_hosts"
+
+# Function to attempt SSH
+ssh_login() {
+    ssh -t ${USER}@${HOST1} "ssh -t ${USER}@${HOST2}"
+    return $?
+}
+
+# First attempt
+ssh_login
+RETVAL=$?
+
+if [ $RETVAL -ne 0 ]; then
+    echo "First SSH attempt failed. Cleaning up host key and retrying..." 1>&2
+    ssh-keygen -R ${HOST1} -f "${KNOWN_HOSTS}" >/dev/null 2>&1
+    # Optional: also clean HOST2 if necessary, uncomment if required
+    # ssh-keygen -R ${HOST2} -f "${KNOWN_HOSTS}" >/dev/null 2>&1
+    # Retry once
+    ssh_login
+    RETVAL=$?
+    if [ $RETVAL -ne 0 ]; then
+        echo "Second SSH attempt failed. Aborting." 1>&2
+        exit $RETVAL
+    fi
+fi
+
