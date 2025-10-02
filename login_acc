@@ -1,19 +1,5 @@
 #!/bin/bash
 
-HOST1="100.0.0.100"
-HOST2="192.168.0.2"
-USER="root"
-KNOWN_HOSTS="/root/.ssh/known_hosts"
-
-ssh -t ${USER}@${HOST1} "ssh -t ${USER}@${HOST2}"
-RETVAL=$?
-if [ $RETVAL -ne 0 ]; then
-    echo "SSH failed with error $RETVAL. Attempting host key cleanup..." 1>&2
-    # Remove old key for middle machine (HOST1)
-    ssh-keygen -R ${HOST1} -f $KNOWN_HOSTS
-    # Optionally, remove for HOST2 as well (if nested host can change key)
-    # ssh-keygen -R ${HOST2} -f $KNOWN_HOSTS
-    echo "Old host key removed. Please retry."
-    exit $RETVAL
-fi
-
+ssh -t root@100.0.0.100 '
+   ssh -t root@192.168.0.2
+'
